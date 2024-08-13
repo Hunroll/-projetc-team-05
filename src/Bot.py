@@ -81,13 +81,16 @@ class Bot():
 
         found = False
 
+        result = ""
         for name, record in contacts.items():
-            if pattern.lower() in name.lower() or any(pattern.lower() in phone.value for phone in record.phones):
+            if pattern.lower() in name.lower() or any(pattern.lower() in phone for phone in record.phones):
                 found = True
-                print(f"{name}: {'; '.join(record.phones)}")
+                result += f"{record}\n"
 
         if not found:
             return "No matches found."
+
+        return result
 
     @input_error
     def get_all(contacts: AddressBook, *args) -> str:
