@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Any, List
-
+import re
 from src.normalize_phone import normalize_phone
 
 
@@ -51,6 +51,17 @@ class Birthday(Field):
     def __str__(self):
         return datetime.strftime(self.value, "%d.%m.%Y")
 
+class Email(Field):
+    def __init__(self, value):
+        # Регулярний вираз для перевірки електронної пошти
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        if not re.match(regex, value):
+            raise ValueError("Incorrect email format")
+        super().__init__(value)
+
+class Address(Field):
+    def __init__(self, value):
+        super().__init__(value)
         
 class Record:
     """Class for representing a contact record.
@@ -58,20 +69,31 @@ class Record:
         name: str
             The name of the contact
         """
-    def __init__(self, name: str, phones: List[str]=None, birthday: str=None):
+    def __init__(self, name: str, phones: List[str]=None, birthday: str=None, email: str=None, address: str=None):
         self.name = Name(name)
         if phones is None:
             phones = []
         else:
             phones = [Phone(p) for p in phones]
         self.__phones = phones
+
         if birthday:
             self.add_birthday(birthday)
         else:
             self.birthday = None
 
+        if email:
+            self.add_email(email)
+        else:
+            self.email = None
+
+        if address:
+            self.add_address(address)
+        else:
+            self.address = None
+
     def __str__(self):
-        return f"Contact name: {self.name.value}, \nbirthday: {self.birthday if self.birthday else 'Not set'}, \nphones: {'; '.join(self.phones)}"
+        return f"Contact name: {self.name.value}, \nbirthday: {self.birthday if self.birthday else 'Not set'}, \nphones: {'; '.join(self.phones)}, \nemail: {self.email if self.email else 'Not set'}, \naddress: {self.address if self.address else 'Not set'}"
     
     def add_phone(self, phone: str):
         phone = Phone(phone)
@@ -94,6 +116,7 @@ class Record:
         else:
             self.__phones = list(map(lambda p: p if p != phone else new_phone, self.__phones))
 
+
     @property
     def phones(self):
         return (p.value for p in self.__phones)
@@ -105,3 +128,11 @@ class Record:
     def add_birthday(self, birthday: str):
         birthday = Birthday(birthday)
         self.birthday = birthday
+
+    def add_email(self, email):
+        email = Email(email)
+        self.email = email
+
+    def add_address(self, address):
+        address = Address(address)
+        self.address = address

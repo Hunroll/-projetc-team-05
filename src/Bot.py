@@ -98,12 +98,14 @@ class Bot():
             raise IndexError("\"all\" doesn\'t need arguments")
         if (len(contacts) == 0):
             return "It\'s lonely here:( Please use \"add\" command"
-        result_str = "{:<20} {:<12} {}\n".format("Name", "Birthday", "Phone(s)")
+        result_str = "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format("Name", "Birthday", "Phone(s)", "Email", "Address")
         for k, user in contacts.items():
-            result_str += "{:<20} {:<12} {}\n".format(
+            result_str += "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format(
                 str(user.name), 
                 str(user.birthday) if user.birthday else 'Not set', 
-                '; '.join(user.phones) )
+                '; '.join(user.phones),
+                str(user.email) if user.email else 'Not set',
+                str(user.address) if user.address else 'Not set' )
         return result_str
 
     @input_error
@@ -138,6 +140,34 @@ class Bot():
         for bd in dict:
             result_str += f"{str(bd['name']) : <20}{bd['congratulation_date'] : <20}\n"
         return result_str
+    
+    @input_error
+    def add_email(contacts: AddressBook, *args) -> str:
+        if (len(*args) != 2):
+            raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add-email _name_ _email@example.com_\"")
+        name, email, *_ = args[0]
+        
+        contact = contacts.find(name)
+        if not contact:
+            raise KeyError("Contact doesn\'t exist")
+        
+        contact.add_email(email)
+        return "Contact updated."
+
+    @input_error
+    def add_address(contacts: AddressBook, *args) -> str:
+        if (len(*args) < 2):
+            raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add-address _name_ _address_\"")
+
+        name = args[0][0]
+        address = ' '.join(args[0][1:])
+        
+        contact = contacts.find(name)
+        if not contact:
+            raise KeyError("Contact doesn\'t exist")
+        
+        contact.add_address(address)
+        return "Contact updated."
 
     def register_handlers() -> dict:
         funcs = dict()
@@ -149,6 +179,8 @@ class Bot():
         funcs["show-birthday"] = Bot.show_birthday
         funcs["all"] = Bot.get_all
         funcs["birthdays"] = Bot.birthdays
+        funcs["add-email"] = Bot.add_email
+        funcs["add-address"] = Bot.add_address
         funcs["exit"] = Bot.say_goodbye
         funcs["close"] = Bot.say_goodbye
         funcs["search"] = Bot.search_contact
