@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Any, List
-
+import re
 from src.normalize_phone import normalize_phone
 
 
@@ -69,19 +69,28 @@ class Record:
         name: str
             The name of the contact
         """
-    def __init__(self, name: str, phones: List[str]=None, birthday: str=None):
+    def __init__(self, name: str, phones: List[str]=None, birthday: str=None, email: str=None, address: str=None):
         self.name = Name(name)
         if phones is None:
             phones = []
         else:
             phones = [Phone(p) for p in phones]
         self.__phones = phones
+
         if birthday:
             self.add_birthday(birthday)
         else:
             self.birthday = None
-        self.email = None
-        self.address = None
+
+        if email:
+            self.add_email(email)
+        else:
+            self.email = None
+
+        if address:
+            self.add_address(address)
+        else:
+            self.address = None
 
     def __str__(self):
         return f"Contact name: {self.name.value}, \nbirthday: {self.birthday if self.birthday else 'Not set'}, \nphones: {'; '.join(self.phones)}, \nemail: {self.email if self.email else 'Not set'}, \naddress: {self.address if self.address else 'Not set'}"
