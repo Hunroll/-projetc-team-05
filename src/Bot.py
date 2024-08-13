@@ -72,6 +72,23 @@ class Bot():
             raise KeyError("Contact doesn\'t exist")
         return str.join("; ", contact.phones)
 
+
+    @input_error
+    def search_contact(contacts: AddressBook, *args) -> str:
+        if (len(*args) != 1):
+            raise IndexError("Incorrect number of arguments" + Fore.YELLOW + " Please try \"search _name_ \"")
+        pattern, *_ = args[0]
+
+        found = False
+
+        for name, record in contacts.items():
+            if pattern.lower() in name.lower() or any(pattern.lower() in phone for phone in record.phones):
+                found = True
+                print(f"{name}: {'; '.join(record.phones)}")
+
+        if not found:
+            return "No matches found."
+
     @input_error
     def get_all(contacts: AddressBook, *args) -> str:
         if (len(*args)):
@@ -131,4 +148,5 @@ class Bot():
         funcs["birthdays"] = Bot.birthdays
         funcs["exit"] = Bot.say_goodbye
         funcs["close"] = Bot.say_goodbye
+        funcs["search"] = Bot.get_phone
         return funcs
