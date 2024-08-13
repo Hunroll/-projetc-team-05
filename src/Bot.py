@@ -82,7 +82,7 @@ class Bot():
         found = False
 
         for name, record in contacts.items():
-            if pattern.lower() in name.lower() or any(pattern.lower() in phone for phone in record.phones):
+            if pattern.lower() in name.lower() or any(pattern.lower() in phone.value for phone in record.phones):
                 found = True
                 print(f"{name}: {'; '.join(record.phones)}")
 
@@ -148,5 +148,5 @@ class Bot():
         funcs["birthdays"] = Bot.birthdays
         funcs["exit"] = Bot.say_goodbye
         funcs["close"] = Bot.say_goodbye
-        funcs["search"] = Bot.get_phone
+        funcs["search"] = Bot.search_contact
         return funcs
