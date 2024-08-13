@@ -33,15 +33,28 @@ class Birthday(Field):
     def __str__(self):
         return datetime.strftime(self.value, "%d.%m.%Y")
 
+class Email(Field):
+    def __init__(self, value):
+        # Регулярний вираз для перевірки електронної пошти
+        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        if not re.match(regex, value):
+            raise ValueError("Incorrect email format")
+        super().__init__(value)
+
+class Address(Field):
+    def __init__(self, value):
+        super().__init__(value)
         
 class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.__phones = []
         self.birthday = None
+        self.email = None
+        self.address = None
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, birthday: {self.birthday if self.birthday else 'Not set'}, phones: {'; '.join(self.phones)}"
+        return f"Contact name: {self.name.value}, birthday: {self.birthday if self.birthday else 'Not set'}, phones: {'; '.join(self.phones)}, email: {self.email if self.email else 'Not set'}, address: {self.address if self.address else 'Not set'}"
     
     def add_phone(self, phone):
         phone = Phone(phone)
@@ -63,6 +76,7 @@ class Record:
             raise ValueError(f"{new_phone.value} already exists")
         self.__phones = list(map(lambda p: p if p != phone else new_phone, self.__phones))
 
+
     @property
     def phones(self):
         return (p.value for p in self.__phones)
@@ -74,3 +88,11 @@ class Record:
     def add_birthday(self, birthday):
         birthday = Birthday(birthday)
         self.birthday = birthday
+
+    def add_email(self, email):
+        email = Email(email)
+        self.email = email
+
+    def add_address(self, address):
+        address = Address(address)
+        self.address = address
