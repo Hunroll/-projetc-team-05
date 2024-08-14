@@ -4,16 +4,16 @@ from src.models import *
 import pickle
 
 class AddressBook(UserDict):
-    def add_record(self, record: Record):
+    def add_record(self, record: UserRecord):
         key = record.name.value
         if key in self.data:
             raise KeyError("Contact already exists")
         self.data[key] = record
 
-    def find(self, name: str) -> Record:
+    def find(self, name: str) -> UserRecord:
         return self.data[name] if name in self.data else None
 
-    def search(self, pattern: str) -> List[Record]:
+    def search(self, pattern: str) -> List[UserRecord]:
         """search for a record by pattern in all fields
             search order: name, phone, birthday, email, address
             non-case-sensitive search

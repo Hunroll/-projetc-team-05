@@ -49,7 +49,7 @@ class Bot:
         mess = "Contact already exist. Just updated with new phone."
         contact = contacts.find(name)
         if not contact:
-            contacts.add_record(Record(name))
+            contacts.add_record(UserRecord(name))
             contact = contacts.find(name)
             mess = "Contact added."
         contact.add_phone(phone)

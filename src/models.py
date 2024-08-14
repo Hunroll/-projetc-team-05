@@ -63,7 +63,7 @@ class Address(Field):
     def __init__(self, value):
         super().__init__(value)
         
-class Record:
+class UserRecord:
     """Class for representing a contact record.
     __init__:
         name: str
