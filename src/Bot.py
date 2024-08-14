@@ -41,7 +41,7 @@ class Bot():
         if (len(*args) != 2):
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add _name_ _phone_\"")
         name, phone, *_ = args[0]
-        mess = "Contact updated."
+        mess = "Contact already exist. Just updated with new phone."
         contact = contacts.find(name)
         if not contact:
             contacts.add_record(Record(name))
@@ -173,7 +173,6 @@ class Bot():
     def delete_record(contacts: AddressBook, *args) -> str:
         ''' Remove contact '''
         name, *_ = args[0]
-        print(name)
         contacts.delete(name)
         return f"Contact {name} removed."
 
