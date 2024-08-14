@@ -12,7 +12,27 @@ class AddressBook(UserDict):
 
     def find(self, name: str) -> Record:
         return self.data[name] if name in self.data else None
-    
+
+    def search(self, pattern: str) -> List[Record]:
+        """search for a record by pattern in all fields
+            search order: name, phone, birthday, email, address
+            non-case-sensitive search
+        """
+        result = []
+        for key in self.data:
+            if pattern.lower() in key.lower():
+                result.append(self.data[key])
+            for phone in self.data[key].phones:
+                if pattern in phone.value:
+                    result.append(self.data[key])
+            if self.data[key].birthday and pattern in self.data[key].birthday.value:
+                result.append(self.data[key])
+            if self.data[key].email.lower() and pattern.lower() in self.data[key].email.value:
+                result.append(self.data[key])
+            if self.data[key].address.lower() and pattern.lower() in self.data[key].address.value:
+                result.append(self.data[key])
+        return result
+
     def delete(self, name: str):
         if name not in self.data:
             raise KeyError("Contact doesn\'t exist")
@@ -44,7 +64,6 @@ class AddressBook(UserDict):
                 #congratulations
                 result_set.append({"name":user.name, "congratulation_date":datetime.strftime(date_this_year, "%d.%m.%Y")})
         return result_set
-
 
     def save_data(self, filename="addressbook.pkl"):
         with open(filename, "wb") as f:
