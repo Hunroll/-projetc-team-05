@@ -22,12 +22,11 @@ class AddressBook(UserDict):
         for key in self.data:
             if pattern.lower() in key.lower():
                 result.append(self.data[key])
-            for phone in self.data[key].phones:
-                if pattern in phone:
-                    result.append(self.data[key])
+            if self.data[key].phones and any(pattern in phone for phone in self.data[key].phones):
+                result.append(self.data[key])
             if self.data[key].birthday and pattern in self.data[key].birthday.value:
                 result.append(self.data[key])
-            if self.data[key].email and pattern.lower() in self.data[key].email.value.lower():
+            if self.data[key].emails and any(pattern.lower() in email.value.lower() for email in self.data[key].emails):
                 result.append(self.data[key])
             if self.data[key].address and pattern.lower() in self.data[key].address.value.lower():
                 result.append(self.data[key])

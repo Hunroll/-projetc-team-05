@@ -136,7 +136,11 @@ class UserRecord:
             self.emails = emails
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, \nbirthday: {self.birthday if self.birthday else 'Not set'}, \nphones: {'; '.join(self.phones)}, \nemail: {self.email if self.email else 'Not set'}, \naddress: {self.address if self.address else 'Not set'}"
+        return (f"Contact name: {self.name.value}, "
+                f"\nbirthday: {self.birthday if self.birthday else 'Not set'}, "
+                f"\nphones: {'; '.join(self.phones)}, "
+                f"\nemail: {'; '.join(self.emails)}, "
+                f"\naddress: {self.address if self.address else 'Not set'}")
 
     @property
     def phones(self):

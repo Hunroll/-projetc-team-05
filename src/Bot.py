@@ -95,13 +95,13 @@ class Bot:
             raise IndexError("\"all\" doesn\'t need arguments")
         if len(contacts) == 0:
             return "It\'s lonely here:( Please use \"add\" command"
-        result_str = "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format("Name", "Birthday", "Phone(s)", "Email", "Address")
+        result_str = "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format("Name", "Birthday", "Phone(s)", "Email(s)", "Address")
         for k, user in contacts.items():
             result_str += "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format(
                 str(user.name), 
                 str(user.birthday) if user.birthday else 'Not set', 
                 '; '.join(user.phones),
-                str(user.email) if user.email else 'Not set',
+                str(user.emails) if user.emails else 'Not set',
                 str(user.address) if user.address else 'Not set' )
         return result_str
 
