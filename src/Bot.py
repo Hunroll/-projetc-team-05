@@ -171,9 +171,10 @@ class Bot:
         contact.add_address(address)
         return "Contact updated."
     
+    @staticmethod
     @input_error
     def delete_record(contacts: AddressBook, *args) -> str:
-        ''' Remove contact '''
+        """ Remove contact """
         name, *_ = args[0]
         contacts.delete(name)
         return f"Contact {name} removed."
