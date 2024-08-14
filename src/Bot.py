@@ -170,6 +170,7 @@ class Bot():
         return "Contact updated."
 
     def register_handlers() -> dict:
+        # If you added new function, update Help text in /main.py
         funcs = dict()
         funcs["hello"] = Bot.say_hello
         funcs["add"] = Bot.add_contact
