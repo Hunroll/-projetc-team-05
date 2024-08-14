@@ -19,6 +19,7 @@ class Bot:
         self.address_book = database.address_book
         self.note_book = database.note_book
     
+
     @property
     def current_user(self):
         return self.__current_user
