@@ -1,4 +1,5 @@
 from datetime import datetime
+from os import remove
 from typing import Any, List
 import re
 from src.normalize_phone import normalize_phone
@@ -29,7 +30,19 @@ class Phone(Field):
         ValueError: if the phone number does not match any of the known formats.
     """
     def __init__(self, value: str):
-        super().__init__(normalize_phone(value))
+        self.__value = None
+        super().__init__(value)
+
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, phone):
+        self.__value = normalize_phone(phone)
+
+
 
 class Birthday(Field):
     """Class for representing a birthday field.
@@ -40,24 +53,42 @@ class Birthday(Field):
         ValueError: if the date does not match the format or is a future date
     """
     def __init__(self, value: str):
+        self.__value = None
+        super().__init__(value)
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value):
         try:
             value = datetime.strptime(value, "%d.%m.%Y")
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
         if value > datetime.now():
             raise ValueError("Birthday can\'t be a future date")
-        super().__init__(value)
-    
+        self.__value = value
+
     def __str__(self):
         return datetime.strftime(self.value, "%d.%m.%Y")
 
 class Email(Field):
     def __init__(self, value):
+        self.__value = None
+        super().__init__(value)
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value):
         # Регулярний вираз для перевірки електронної пошти
         regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
         if not re.match(regex, value):
             raise ValueError("Incorrect email format")
-        super().__init__(value)
+
 
 class Address(Field):
     def __init__(self, value):
@@ -66,35 +97,68 @@ class Address(Field):
 class UserRecord:
     """Class for representing a contact record.
     __init__:
-        name: str
+        name: str (required)
             The name of the contact
+        Optional arguments (all private):
+        phones: List[str]
+            The phone numbers of the contact. Valid format '0XXXXXXXXX' or '+380XXXXXXXXX'
+        birthday: str
+            The birthday of the contact. Valid format DD.MM.YYYY
+        emails: List[str]
+            The email addresses of the contact. Valid format string user@subdomain.domain
+        address: str
+            The address of the contact. Without any validation.
         """
-    def __init__(self, name: str, phones: List[str]=None, birthday: str=None, email: str=None, address: str=None):
-        self.name = Name(name)
-        if phones is None:
-            phones = []
-        else:
-            phones = [Phone(p) for p in phones]
-        self.__phones = phones
+    def __init__(self, name: str,
+                 phones: List[str]=None,
+                 birthday: str=None,
+                 emails: List[str]=None,
+                 address: str=None):
+        self.__name = Name(name)  # For make sure that the name is always a Name instance
+        self.__phones = []        # For validation and normalization
+        self.__birthday = None    # For validation and formatting
+        self.__emails = []        # For validation
+        self.__address = None     # For make sure that the address is always an Address instance + prepare for future validation
+
+        if phones:
+            self.phones = phones
 
         if birthday:
-            self.add_birthday(birthday)
-        else:
-            self.birthday = None
+            self.birthday = birthday
 
-        if email:
-            self.add_email(email)
-        else:
-            self.email = None
+        if emails:
+            self.emails = emails
 
         if address:
-            self.add_address(address)
-        else:
-            self.address = None
+            self.address = address
+
+        if emails:
+            self.emails = emails
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, \nbirthday: {self.birthday if self.birthday else 'Not set'}, \nphones: {'; '.join(self.phones)}, \nemail: {self.email if self.email else 'Not set'}, \naddress: {self.address if self.address else 'Not set'}"
-    
+        return (f"Contact name: {self.name.value}, "
+                f"\nbirthday: {self.birthday if self.birthday else 'Not set'}, "
+                f"\nphones: {'; '.join(self.phones)}, "
+                f"\nemail: {'; '.join(self.emails)}, "
+                f"\naddress: {self.address if self.address else 'Not set'}")
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name: str):
+        self.__name = Name(name)
+
+    @property
+    def phones(self):
+        return (p.value for p in self.__phones)
+
+    @phones.setter
+    def phones(self, phones: List[str]):
+        for phone in phones:
+            self.add_phone(phone)
+
     def add_phone(self, phone: str):
         phone = Phone(phone)
         if phone not in self.__phones:
@@ -102,37 +166,66 @@ class UserRecord:
         else:
             raise ValueError(f"[ERROR] Number {phone} already exists in the record {self.name.value}")
 
+    @phones.setter
+    def phones(self, phones: List[str]):
+        for phone in phones:
+            self.add_phone(phone)
+
     def remove_phone(self, phone: str):
         phone = Phone(phone)
-        self.__phones.remove(phone)
-
-    def edit_phone(self, phone: str, new_phone: str):
-        phone = Phone(phone)
-        new_phone = Phone(new_phone)
         if phone not in self.__phones:
             raise ValueError(f"{phone.value} does not exist")
-        elif new_phone in self.__phones:
-            raise ValueError(f"{new_phone.value} already exists")
         else:
-            self.__phones = list(map(lambda p: p if p != phone else new_phone, self.__phones))
+            self.__phones.remove(phone)
 
-
-    @property
-    def phones(self):
-        return (p.value for p in self.__phones)
-        
+    def edit_phone(self, phone: str, new_phone: str):
+        if Phone(phone) not in self.__phones:
+            raise ValueError(f"{phone} does not exist")
+        self.add_phone(new_phone)  # Try to add new phone raises an error if the phone already exists
+        self.remove_phone(phone)   # Remove the old phone if the new one was added successfully. Otherwise, the old phone remains in the list
 
     def find_phone(self, phone: Phone) -> Phone|None:
         return phone if phone in self.phones else None
 
-    def add_birthday(self, birthday: str):
+    @property
+    def birthday(self):
+        return self.__birthday
+
+    @birthday.setter
+    def birthday(self, birthday: str):
         birthday = Birthday(birthday)
-        self.birthday = birthday
+        self.__birthday = birthday
+
+    @property
+    def emails(self):
+        return self.__emails
+
+    @emails.setter
+    def emails(self, emails: List[str]):
+        for email in emails:
+            self.add_email(email)
 
     def add_email(self, email):
-        email = Email(email)
-        self.email = email
+        self.__emails.append(Email(email))
 
-    def add_address(self, address):
-        address = Address(address)
-        self.address = address
+    def remove_email(self, email):
+        email = Email(email)
+        if email not in self.__emails:
+            raise ValueError(f"{email.value} does not exist")
+        else:
+            self.__emails.remove(email)
+
+    def edit_email(self, email, new_email):
+        if Email(email) not in self.__emails:
+            raise ValueError(f"{email} does not exist")
+        self.add_email(new_email)  # Try to add new email raises an error if the email already exists
+        self.remove_email(email)   # Remove the old email if the new one was added successfully. Otherwise, the old email remains in the list
+
+    @property
+    def address(self):
+        return self.__address
+
+    @address.setter
+    def address(self, address):
+        address_inst = Address(address)
+        self.__address = address_inst
