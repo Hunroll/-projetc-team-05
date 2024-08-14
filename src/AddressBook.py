@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from collections import UserDict
+from typing import Dict
+
 from src.models import *
 import pickle
 
@@ -37,9 +39,9 @@ class AddressBook(UserDict):
             raise KeyError("Contact doesn\'t exist")
         self.data.pop(name)
 
-    def get_upcoming_birthdays(self, specific_date = None):
-        result_set = []
-        today = datetime.strptime(specific_date, "%d.%m.%Y").date() if specific_date != None else datetime.today().date()
+    def get_upcoming_birthdays(self, specific_date = None, days = 7) -> List[Dict[str, str]]:
+        congrats_list = []
+        today = datetime.strptime(specific_date, "%d.%m.%Y").date() if specific_date is not None else datetime.today().date()
         users_with_bd = list(v for (k, v) in self.data.items() if v.birthday)
         for user in users_with_bd:
             original_date = user.birthday.value.date()
@@ -48,26 +50,29 @@ class AddressBook(UserDict):
             try:
                 date_this_year = original_date.replace(year = today.year)
             except:
+                # TODO: Remove this after adding validation for birthdays at 02/29
                 #29th of Feb
                 date_this_year = datetime(year = today.year, month = 3, day = 1).date()
             
             # Move those who had BD this year to a next year
-            if (date_this_year < today):
+            if date_this_year < today:
                 date_this_year = date_this_year.replace(year = today.year + 1)
             
             # Move weekenders to MON
-            if (date_this_year.weekday() >= 5):
+            if date_this_year.weekday() >= 5:
                 date_this_year += timedelta(days = 7 - date_this_year.weekday()) # Move 1 or 2 days forward
             
-            if ((date_this_year - today).days <= 7):
+            if (date_this_year - today).days <= days:
                 #congratulations
-                result_set.append({"name":user.name, "congratulation_date":datetime.strftime(date_this_year, "%d.%m.%Y")})
-        return result_set
+                congrats_list.append({"name":user.name, "congratulation_date":datetime.strftime(date_this_year, "%d.%m.%Y")})
+        return congrats_list
 
-    def save_data(self, filename="addressbook.pkl"):
+    @classmethod
+    def save_data(cls, filename="addressbook.pkl"):
         with open(filename, "wb") as f:
-            pickle.dump(self, f)
+            pickle.dump(cls, f)
 
+    @staticmethod
     def load_data(filename="addressbook.pkl"):
         try:
             with open(filename, "rb") as f:
