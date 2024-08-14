@@ -36,7 +36,7 @@ class Bot:
 
     @staticmethod
     @input_error
-    def say_goodbye(contacts: AddressBook, *args) -> str:
+    def finalize(contacts: AddressBook, *args) -> str:
         contacts.save_data()
         return "DB is saved. Good bye!"
 
@@ -193,7 +193,7 @@ class Bot:
         funcs["add-email"] = Bot.add_email
         funcs["add-address"] = Bot.add_address
         funcs["delete"] = Bot.delete_record
-        funcs["exit"] = Bot.say_goodbye
-        funcs["close"] = Bot.say_goodbye
+        funcs["exit"] = Bot.finalize
+        funcs["close"] = Bot.finalize
         funcs["search"] = Bot.search_contact
         return funcs
