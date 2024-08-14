@@ -23,13 +23,13 @@ class AddressBook(UserDict):
             if pattern.lower() in key.lower():
                 result.append(self.data[key])
             for phone in self.data[key].phones:
-                if pattern in phone.value:
+                if pattern in phone:
                     result.append(self.data[key])
             if self.data[key].birthday and pattern in self.data[key].birthday.value:
                 result.append(self.data[key])
-            if self.data[key].email.lower() and pattern.lower() in self.data[key].email.value:
+            if self.data[key].email and pattern.lower() in self.data[key].email.value.lower():
                 result.append(self.data[key])
-            if self.data[key].address.lower() and pattern.lower() in self.data[key].address.value:
+            if self.data[key].address and pattern.lower() in self.data[key].address.value.lower():
                 result.append(self.data[key])
         return result
 
