@@ -4,19 +4,60 @@ from colorama import Fore, Style
 from src.AddressBook import AddressBook
 from src.data_base import DataBase
 from src.models import *
+from src.NoteBook import NoteBook
+from src.data_base import DataBase
 
 CMD_EXIT="exit"
 CMD_NA="n/a"
 class Bot:
     current_user: str
     address_book: AddressBook
-    # note_book: NoteBook
+    note_book: NoteBook
 
-    def __init__(self, user_name: str):
+    def __init__(self, user_name: str): 
         self.current_user = user_name.lower() # TODO: Normalize
         database = DataBase.load_data(self.current_user)
         self.address_book = database.address_book
+        self.notes = NoteBook()
+   # def save_data(self):
+     #   DataBase.save_data(self.address_book, self.notes, user_name.lower())
 
+
+    def register_handlers(self):
+        return {
+            "add-note": self.add_note,
+            "edit-note": self.edit_note,
+            "delete-note": self.delete_note,
+            "search-notes": self.search_notes,
+            "show-notes": self.show_all_notes,
+        }
+
+    def add_note(self, args):
+        if len(args) < 2:
+            return "Usage: add-note [title] [content]"
+        title, content = args[0], " ".join(args[1:])
+        return self.notes.add_note(title, content)
+
+    def edit_note(self, args):
+        if len(args) < 2:
+            return "Usage: edit-note [title] [new_content]"
+        title, new_content = args[0], " ".join(args[1:])
+        return self.notes.edit_note(title, new_content)
+
+    def delete_note(self, args):
+        if len(args) < 1:
+            return "Usage: delete-note [title]"
+        title = args[0]
+        return self.notes.delete_note(title)
+
+    def search_notes(self, args):
+        if len(args) < 1:
+            return "Usage: search-notes [keyword]"
+        keyword = " ".join(args)
+        return self.notes.search_notes(keyword)
+
+    def show_all_notes(self, args):
+        return self.notes.show_all_notes()
     def input_error(func):
         def inner(*args, **kwargs) -> str:
             try:
@@ -192,4 +233,9 @@ class Bot:
         funcs["exit"] = self.finalize
         funcs["close"] = self.finalize
         funcs["search"] = self.search_contact
+        funcs["Notes"]= self.show_all_notes
+        funcs["add-note"]= self.add_note
+        funcs["edit-note"]=self.edit_note
+        funcs["delete-note"]=self.delete_note
+        funcs["search-notes"]=self.search_notes
         return funcs
