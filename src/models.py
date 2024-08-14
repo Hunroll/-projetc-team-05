@@ -114,11 +114,11 @@ class UserRecord:
                  birthday: str=None,
                  emails: List[str]=None,
                  address: str=None):
-        self.name = Name(name)
-        self.__phones = []
-        self.__birthday = None
-        self.__address = None
-        self.__emails = []
+        self.__name = Name(name)  # For make sure that the name is always a Name instance
+        self.__phones = []        # For validation and normalization
+        self.__birthday = None    # For validation and formatting
+        self.__emails = []        # For validation
+        self.__address = None     # For make sure that the address is always an Address instance + prepare for future validation
 
         if phones:
             self.phones = phones
@@ -141,6 +141,14 @@ class UserRecord:
                 f"\nphones: {'; '.join(self.phones)}, "
                 f"\nemail: {'; '.join(self.emails)}, "
                 f"\naddress: {self.address if self.address else 'Not set'}")
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name: str):
+        self.__name = Name(name)
 
     @property
     def phones(self):
@@ -210,8 +218,8 @@ class UserRecord:
     def edit_email(self, email, new_email):
         if Email(email) not in self.__emails:
             raise ValueError(f"{email} does not exist")
-        self.add_email(new_email)
-        self.remove_email(email)
+        self.add_email(new_email)  # Try to add new email raises an error if the email already exists
+        self.remove_email(email)   # Remove the old email if the new one was added successfully. Otherwise, the old email remains in the list
 
     @property
     def address(self):

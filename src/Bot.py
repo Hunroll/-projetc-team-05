@@ -13,10 +13,20 @@ class Bot:
     # note_book: NoteBook
 
     def __init__(self, user_name: str):
-        self.current_user = user_name.lower() # TODO: Normalize
+        self.__current_user = user_name.lower() # TODO: Normalize and validate user_name
         database = DataBase.load_data(self.current_user)
         self.address_book = database.address_book
 
+    @property
+    def current_user(self):
+        return self.__current_user
+
+    @current_user.setter
+    def current_user(self, user_name):
+        # TODO: Validation of user_name place here
+        pass
+
+    @staticmethod
     def input_error(func):
         def inner(*args, **kwargs) -> str:
             try:
@@ -63,6 +73,8 @@ class Bot:
 
     @input_error
     def change_contact(self, *args) -> str:
+        # TODO: Try to use argparse module for parsing arguments
+        # TODO: Add change_phone, change_email, change_address methods
         if len(*args) != 3:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"change _name_ _old_phone_ _new_phone_\"")
         name, old_phone, new_phone, *_ = args[0]
@@ -168,7 +180,6 @@ class Bot:
         contact.add_address(address)
         return "Contact updated."
     
-    @staticmethod
     @input_error
     def delete_record(self, *args) -> str:
         """ Remove contact """

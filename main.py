@@ -5,13 +5,14 @@ from colorama import Style
 
 def main_loop():
     try:
-        exit = False
+        exit_ = False
 
         bot = Bot(input("Enter login >>> "))
         handlers = bot.register_handlers()
 
         # Let's make nice and readable help message
         # List with available commands must be changed if added new functions
+        # TODO: Add subloop for notes
         command_list = [
             ("hello", "Greet the bot."),
             ("add [name] [phone]", "Add a new contact."),
@@ -36,20 +37,21 @@ def main_loop():
         )
         print(command_list)
 
-        while not exit:
+        while not exit_:
             inp = input("bot_shell >> ").strip()
             command, *args = bot.parse_input(inp)
-            if (command in ["exit", "close"]):
-                exit = True
+            if command in ["exit", "close"]:
+                exit_ = True
             #no "else" because some handlers may be registered
-            if (command in handlers):
+            if command in handlers:
                 print(handlers[command](args) + Style.RESET_ALL)
 
     except Exception as err:
-        print (f"Unexprected error: {err}")
-        if (bot):
+        print(f"Unexpected error: {err}")
+        if bot:
             print("Trying to save DB state.")
-            bot.save_data()
+            # TODO: Adding valid save_data method
+            # bot.save_data()
         return None
     finally:
         print (Style.RESET_ALL)
