@@ -25,12 +25,12 @@ def main_loop():
             ("add-address [name] [address]", "Add address to existing contact."),
             ("delete [name]", "Delete contact."),
             ("search [arg]", "Search contact."),
-            ("exit || close", "Exit the bot."),
             ("add-note [title] [content]", "Add a new note."),
             ("edit-note [title] [new_content]", "Edit an existing note."),
             ("delete-note [title]", "Delete an existing note."),
             ("search-notes [keyword]", "Search for notes by keyword."),
             ("show-notes", "Show all notes."),
+            ("exit || close", "Exit the bot."),
         ]
 
         max_len = max(len(cmd) for cmd, _ in command_list)
