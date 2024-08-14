@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from collections import UserDict
 from src.models import *
-import pickle
 
 class AddressBook(UserDict):
     def add_record(self, record: UserRecord):
@@ -65,13 +64,4 @@ class AddressBook(UserDict):
                 result_set.append({"name":user.name, "congratulation_date":datetime.strftime(date_this_year, "%d.%m.%Y")})
         return result_set
 
-    def save_data(self, filename="addressbook.pkl"):
-        with open(filename, "wb") as f:
-            pickle.dump(self, f)
-
-    def load_data(filename="addressbook.pkl"):
-        try:
-            with open(filename, "rb") as f:
-                return pickle.load(f)
-        except FileNotFoundError:
-            return AddressBook()  # Повернення нової адресної книги, якщо файл не знайдено
+   

@@ -6,8 +6,9 @@ from colorama import Style
 def main_loop():
     try:
         exit = False
-        handlers = Bot.register_handlers()
-        contacts = AddressBook.load_data()
+
+        bot = Bot(input("Enter login >>> "))
+        handlers = bot.register_handlers()
 
         # Let's make nice and readable help message
         # List with available commands must be changed if added new functions
@@ -37,17 +38,18 @@ def main_loop():
 
         while not exit:
             inp = input("bot_shell >> ").strip()
-            command, *args = Bot.parse_input(inp)
+            command, *args = bot.parse_input(inp)
             if (command in ["exit", "close"]):
                 exit = True
             #no "else" because some handlers may be registered
             if (command in handlers):
-                print(handlers[command](contacts, args) + Style.RESET_ALL)
+                print(handlers[command](args) + Style.RESET_ALL)
 
     except Exception as err:
         print (f"Unexprected error: {err}")
-        print("Trying to save DB state.")
-        contacts.save_data()
+        if (bot):
+            print("Trying to save DB state.")
+            bot.save_data()
         return None
     finally:
         print (Style.RESET_ALL)
