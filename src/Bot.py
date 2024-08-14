@@ -168,6 +168,14 @@ class Bot():
         
         contact.add_address(address)
         return "Contact updated."
+    
+    @input_error
+    def delete_record(contacts: AddressBook, *args) -> str:
+        ''' Remove contact '''
+        name, *_ = args[0]
+        print(name)
+        contacts.delete(name)
+        return f"Contact {name} removed."
 
     def register_handlers() -> dict:
         # If you added new function, update Help text in /main.py
@@ -182,6 +190,7 @@ class Bot():
         funcs["birthdays"] = Bot.birthdays
         funcs["add-email"] = Bot.add_email
         funcs["add-address"] = Bot.add_address
+        funcs["delete"] = Bot.delete_record
         funcs["exit"] = Bot.say_goodbye
         funcs["close"] = Bot.say_goodbye
         funcs["search"] = Bot.search_contact
