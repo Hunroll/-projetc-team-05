@@ -3,7 +3,6 @@ from collections import UserDict
 from typing import Dict
 
 from src.models import *
-import pickle
 
 class AddressBook(UserDict):
     def add_record(self, record: UserRecord):
@@ -67,15 +66,4 @@ class AddressBook(UserDict):
                 congrats_list.append({"name":user.name, "congratulation_date":datetime.strftime(date_this_year, "%d.%m.%Y")})
         return congrats_list
 
-    @classmethod
-    def save_data(cls, filename="addressbook.pkl"):
-        with open(filename, "wb") as f:
-            pickle.dump(cls, f)
-
-    @staticmethod
-    def load_data(filename="addressbook.pkl"):
-        try:
-            with open(filename, "rb") as f:
-                return pickle.load(f)
-        except FileNotFoundError:
-            return AddressBook()  # Повернення нової адресної книги, якщо файл не знайдено
+   
