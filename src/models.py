@@ -229,3 +229,42 @@ class UserRecord:
     def address(self, address):
         address_inst = Address(address)
         self.__address = address_inst
+
+
+class Title(Field):
+    """Class for representing the title of a note."""
+    pass
+
+class Content(Field):
+    """Class for representing the content of a note."""
+    pass
+
+class Tags(Field):
+    """Class for representing tags of a note."""
+    def __init__(self, value: List[str]):
+        super().__init__(value)
+
+class Note:
+    """Class for representing a note with title, content, and tags."""
+    def __init__(self, title: str, content: str, tags: List[str] = None):
+        self.title = Title(title)
+        self.content = Content(content)
+        self.tags = Tags(tags) if tags else Tags([])
+
+    def __str__(self):
+        tags_str = ', '.join(self.tags.value) if self.tags.value else 'No tags'
+        return f"Title: {self.title.value}\nContent: {self.content.value}\nTags: {tags_str}"
+
+    def add_tag(self, tag: str):
+        if tag not in self.tags.value:
+            self.tags.value.append(tag)
+
+    def remove_tag(self, tag: str):
+        if tag in self.tags.value:
+            self.tags.value.remove(tag)
+
+    def edit_content(self, new_content: str):
+        self.content = Content(new_content)
+
+    def search_by_keyword(self, keyword: str) -> bool:
+        return keyword in self.title.value or keyword in self.content.value or any(keyword in tag for tag in self.tags.value)
