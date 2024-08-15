@@ -18,6 +18,10 @@ class Bot:
         database = DataBase.load_data(self.current_user)
         self.address_book = database.address_book
         self.note_book = database.note_book
+    
+        self.handlers = self.register_handlers()
+        self.note_handlers = self.register_note_handlers()
+    
 
 
     @property
@@ -235,33 +239,75 @@ class Bot:
         name, *_ = args[0]
         self.address_book.delete(name)
         return f"Contact {name} removed."
+    
+    @input_error
+    def notebook_mode(self):
+        print("Welcome to NoteBook mode! Type 'exit' to go back.")
+        exit_notebook = False
 
+        while not exit_notebook:
+            inp = input("notebook >> ").strip()
+            command, *args = self.parse_input(inp)
+
+            if command in ["exit", "close"]:
+                exit_notebook = True
+            elif command in self.note_handlers:
+                print(self.note_handlers[command](args))
+            else:
+                print("Unknown command. Type 'help' to see available commands.")
+    
+    @input_error
     def add_note(self, args):
         if len(args) < 2:
             return "Usage: add-note [title] [content]"
         title, content = args[0], " ".join(args[1:])
         return self.note_book.add_note(title, content)
 
+    @input_error
     def edit_note(self, args):
         if len(args) < 2:
             return "Usage: edit-note [title] [new_content]"
         title, new_content = args[0], " ".join(args[1:])
         return self.note_book.edit_note(title, new_content)
 
+    @input_error
     def delete_note(self, args):
         if len(args) < 1:
             return "Usage: delete-note [title]"
         title = args[0]
         return self.note_book.delete_note(title)
 
+    @input_error
     def search_notes(self, args):
         if len(args) < 1:
             return "Usage: search-notes [keyword]"
         keyword = " ".join(args)
         return self.note_book.search_notes(keyword)
 
+    @input_error
     def show_all_notes(self, args):
         return self.note_book.show_all_notes()
+    
+    @input_error
+    def add_tags(self, args):
+        if len(args) < 2:
+            return "Usage: add-tag [title] [tag1, tag2, ...]"
+        title = args[0]
+        tags = args[1:]
+        return self.note_book.add_tags_to_note(title, tags)
+
+    @input_error
+    def remove_tag(self, args):
+        if len(args) < 2:
+            return "Usage: remove-tag [title] [tag]"
+        title, tag = args[0], args[1]
+        return self.note_book.remove_tag_from_note(title, tag)
+
+    def search_by_tag(self, args):
+        if len(args) < 1:
+            return "Usage: search-by-tag [tag]"
+        tag = args[0]
+        return self.note_book.search_notes_by_tag(tag)
 
     def register_handlers(self) -> dict:
         # If you added new function, update Help text in /main.py
@@ -277,14 +323,24 @@ class Bot:
         funcs["add-email"] = self.add_email
         funcs["add-address"] = self.add_address
         funcs["search"] = self.search_contact
-        funcs["add-note"]= self.add_note
-        funcs["edit-note"]=self.edit_note
-        funcs["delete-note"]=self.delete_note
-        funcs["search-notes"]=self.search_notes
-        funcs["show-notes"] = self.show_all_notes
         funcs["edit"] = self.edit_contact
         funcs["delete"] = self.delete_record
+        funcs["notebook"] = lambda _: self.notebook_mode()  # Переход в режим NoteBook
         funcs["exit"] = self.finalize
         funcs["close"] = self.finalize
         funcs["search"] = self.search_contact
         return funcs
+
+    def register_note_handlers(self) -> dict:
+        funcs = dict()
+        funcs["add-note"] = self.add_note
+        funcs["edit-note"] = self.edit_note
+        funcs["delete-note"] = self.delete_note
+        funcs["add-tags"] = self.add_tags
+        funcs["remove-tag"] = self.remove_tag
+        funcs["search-notes"] = self.search_notes
+        funcs["search-by-tag"] = self.search_by_tag
+        funcs["search-by-tags"] = lambda args: self.note_book.search_notes_by_tags(args)
+        funcs["show-notes"] = self.show_all_notes
+        return funcs
+  

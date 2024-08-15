@@ -27,12 +27,21 @@ def main_loop():
             ("edit [name] [field]", "Edit contact."),
             ("delete [name]", "Delete contact."),
             ("search [arg]", "Search contact."),
-            ("add-note [title] [content]", "Add a new note."),
+            ("notebook", "Enter NoteBook mode to manage notes."),
+            ("exit || close", "Exit the bot."),
+        ]
+
+        # TODO: implement show next list after enter notebook mode
+        notebook_command_list = [
+            ("add-note [title] [content] [tags]", "Add a new note with optional tags."),
             ("edit-note [title] [new_content]", "Edit an existing note."),
             ("delete-note [title]", "Delete an existing note."),
+            ("add-tags [title] [tag]", "Add a tag to a note."),
+            ("remove-tag [title] [tag]", "Remove a tag from a note."),
             ("search-notes [keyword]", "Search for notes by keyword."),
+            ("search-by-tags [tag1, tag2, ...]", "Search for notes by tags."),
             ("show-notes", "Show all notes."),
-            ("exit || close", "Exit the bot."),
+            ("exit || close", "Exit NoteBook mode and return to main menu."),
         ]
 
         max_len = max(len(cmd) for cmd, _ in command_list)
