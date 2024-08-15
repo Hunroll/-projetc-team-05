@@ -129,7 +129,7 @@ class Bot:
         if not contact:
             raise KeyError("Contact doesn\'t exist")
         
-        contact.add_birthday(birthday)
+        contact.birthday = birthday
         return "Contact updated."
 
     @input_error
