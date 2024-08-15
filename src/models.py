@@ -74,8 +74,14 @@ class Birthday(Field):
         return datetime.strftime(self.value, "%d.%m.%Y")
 
 class Email(Field):
+    """
+    Class for representing an email field with validation by regex.
+    """
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
     def __init__(self, value):
-        self.__value = None
+        if not re.match(self.regex, value):
+            raise ValueError("Incorrect email format")
+        self.__value = value
         super().__init__(value)
 
     @property
@@ -83,9 +89,8 @@ class Email(Field):
         return self.__value
 
     @value.setter
-    def value(self, value):
+    def value(self, value, regex=regex):
         # Регулярний вираз для перевірки електронної пошти
-        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
         if not re.match(regex, value):
             raise ValueError("Incorrect email format")
 
@@ -132,14 +137,11 @@ class UserRecord:
         if address:
             self.address = address
 
-        if emails:
-            self.emails = emails
-
     def __str__(self):
         return (f"Contact name: {self.name.value}, "
                 f"\nbirthday: {self.birthday if self.birthday else 'Not set'}, "
                 f"\nphones: {'; '.join(self.phones)}, "
-                f"\nemail: {'; '.join(self.emails)}, "
+                f"\nemail: {'; '.join(self.emails) if self.emails else 'Not set'}, "
                 f"\naddress: {self.address if self.address else 'Not set'}")
 
     @property
@@ -152,6 +154,8 @@ class UserRecord:
 
     @property
     def phones(self):
+        if len(self.__phones) == 0:
+            return None
         return (p.value for p in self.__phones)
 
     @phones.setter
@@ -198,7 +202,9 @@ class UserRecord:
 
     @property
     def emails(self):
-        return self.__emails
+        if len(self.__emails) == 0:
+            return None
+        return (email.value for email in self.__emails)
 
     @emails.setter
     def emails(self, emails: List[str]):
@@ -206,7 +212,11 @@ class UserRecord:
             self.add_email(email)
 
     def add_email(self, email):
-        self.__emails.append(Email(email))
+        email = Email(email)
+        if email not in self.__emails:
+            self.__emails.append(email)
+        else:
+            raise ValueError(f"[ERROR] Email {email} already exists in the record {self.name.value}")
 
     def remove_email(self, email):
         email = Email(email)
