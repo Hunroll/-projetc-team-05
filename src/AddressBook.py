@@ -5,14 +5,19 @@ from typing import Dict
 from src.models import *
 
 class AddressBook(UserDict):
+    user_id = 0
     def add_record(self, record: UserRecord):
-        key = record.name.value
+        AddressBook.user_id += 1
+        key = AddressBook.user_id
         if key in self.data:
             raise KeyError("Contact already exists")
         self.data[key] = record
 
-    def find(self, name: str) -> UserRecord:
-        return self.data[name] if name in self.data else None
+    def find(self, name: str) -> UserRecord|None:
+        for key in self.data:
+            if name.lower() in self.data[key].name.value.lower():
+                return self.data[key]
+        return None
 
     def search(self, pattern: str) -> List[UserRecord]:
         """search for a record by pattern in all fields
@@ -21,17 +26,17 @@ class AddressBook(UserDict):
         """
         result = []
         for key in self.data:
-            if pattern.lower() in key.lower():
+            if pattern.lower() in self.data[key].name.value.lower():
                 result.append(self.data[key])
-            if self.data[key].phones and any(pattern in phone for phone in self.data[key].phones):
+            elif self.data[key].phones and any(pattern in phone for phone in self.data[key].phones):
                 result.append(self.data[key])
-            if self.data[key].birthday and pattern in str(self.data[key].birthday.value):
+            elif self.data[key].birthday and pattern in str(self.data[key].birthday.value):
                 result.append(self.data[key])
-            if self.data[key].emails and any(pattern.lower() in email.value.lower() for email in self.data[key].emails):
+            elif self.data[key].emails and any(pattern.lower() in email.value.lower() for email in self.data[key].emails):
                 result.append(self.data[key])
-            if self.data[key].address and pattern.lower() in self.data[key].address.value.lower():
+            elif self.data[key].address and pattern.lower() in self.data[key].address.value.lower():
                 result.append(self.data[key])
-        return result
+        return result if len(result) > 0 else None
 
     def delete(self, name: str):
         if name not in self.data:

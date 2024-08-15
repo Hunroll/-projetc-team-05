@@ -31,25 +31,13 @@ def main_loop():
             ("exit || close", "Exit the bot."),
         ]
 
-        # TODO: implement show next list after enter notebook mode
-        notebook_command_list = [
-            ("add-note [title] [content] [tags]", "Add a new note with optional tags."),
-            ("edit-note [title] [new_content]", "Edit an existing note."),
-            ("delete-note [title]", "Delete an existing note."),
-            ("add-tags [title] [tag]", "Add a tag to a note."),
-            ("remove-tag [title] [tag]", "Remove a tag from a note."),
-            ("search-notes [keyword]", "Search for notes by keyword."),
-            ("search-by-tags [tag1, tag2, ...]", "Search for notes by tags."),
-            ("show-notes", "Show all notes."),
-            ("exit || close", "Exit NoteBook mode and return to main menu."),
-        ]
-
         max_len = max(len(cmd) for cmd, _ in command_list)
 
         command_list = (
             f"{Fore.LIGHTGREEN_EX}\nAvailable commands:\n" +
             "".join(f"{Fore.LIGHTYELLOW_EX}- {cmd.ljust(max_len)}{Style.RESET_ALL} - {desc}\n" for cmd, desc in command_list)
         )
+
         print(command_list)
 
         while not exit_:
@@ -57,9 +45,11 @@ def main_loop():
             command, *args = bot.parse_input(inp)
             if command in ["exit", "close"]:
                 exit_ = True
-            #no "else" because some handlers may be registered
             if command in handlers:
                 print(handlers[command](args) + Style.RESET_ALL)
+            else:
+                print(f"{Fore.RED}Unknown command!{Style.RESET_ALL}")
+                print(command_list)
 
     except Exception as err:
         print(f"Unexpected error: {err}")
