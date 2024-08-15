@@ -304,6 +304,7 @@ class Bot:
         title, tag = args[0], args[1]
         return self.note_book.remove_tag_from_note(title, tag)
 
+    @input_error
     def search_by_tag(self, args):
         if len(args) < 1:
             return "Usage: search-by-tag [tag]"
