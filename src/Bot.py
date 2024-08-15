@@ -241,7 +241,7 @@ class Bot:
         return f"Contact {name} removed."
     
     @input_error
-    def notebook_mode(self):
+    def notebook_mode(self, _):
         print("Welcome to NoteBook mode! Type 'exit' to go back.")
         exit_notebook = False
 
@@ -255,6 +255,7 @@ class Bot:
                 print(self.note_handlers[command](args))
             else:
                 print("Unknown command. Type 'help' to see available commands.")
+        return "Navigating back to main menu."
     
     @input_error
     def add_note(self, args):
@@ -325,7 +326,7 @@ class Bot:
         funcs["search"] = self.search_contact
         funcs["edit"] = self.edit_contact
         funcs["delete"] = self.delete_record
-        funcs["notebook"] = lambda _: self.notebook_mode()  # Переход в режим NoteBook
+        funcs["notebook"] = self.notebook_mode  # Переход в режим NoteBook
         funcs["exit"] = self.finalize
         funcs["close"] = self.finalize
         funcs["search"] = self.search_contact
@@ -340,7 +341,7 @@ class Bot:
         funcs["remove-tag"] = self.remove_tag
         funcs["search-notes"] = self.search_notes
         funcs["search-by-tag"] = self.search_by_tag
-        funcs["search-by-tags"] = lambda args: self.note_book.search_notes_by_tags(args)
+        funcs["search-by-tags"] = self.note_book.search_notes_by_tags
         funcs["show-notes"] = self.show_all_notes
         return funcs
   
