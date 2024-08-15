@@ -5,6 +5,7 @@ from src.AddressBook import AddressBook
 from src.data_base import DataBase
 from src.models import *
 from src.NoteBook import NoteBook
+import functools # Metadata import from function into decorator
 
 CMD_EXIT="exit"
 CMD_NA="n/a"
@@ -34,6 +35,7 @@ class Bot:
 
     @staticmethod
     def input_error(func):
+        @functools.wraps(func) # Get oiginal metadata from functions
         def inner(*args, **kwargs) -> str:
             try:
                 return func(*args, **kwargs)
@@ -57,17 +59,20 @@ class Bot:
 
     @input_error
     def say_hello(self, *args) -> str:
+        '''hello, Greet the bot.'''
         if len(*args):
             raise IndexError("\"hello\" doesn\'t need arguments")
         return f"How can I help you, {self.current_user}?"
 
     @input_error
     def finalize(self, *args) -> str:
+        '''exit || close, Exit the bot.'''
         DataBase.save_data(self.address_book, self.note_book, self.current_user)
         return "DB is saved. Good bye!"
 
     @input_error
     def add_contact(self, *args) -> str:
+        '''add [name] [phone], Add a new contact.'''
         if len(*args) != 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add _name_ _phone_\"")
         name, phone, *_ = args[0]
@@ -82,6 +87,7 @@ class Bot:
 
     @input_error
     def change_contact(self, *args) -> str:
+        '''change [name] [phone], Change an existing contact's phone.'''
         # TODO: Try to use argparse module for parsing arguments
         # TODO: Add change_phone, change_email, change_address methods
         if len(*args) != 3:
@@ -96,7 +102,7 @@ class Bot:
 
     @input_error
     def get_phone(self, *args) -> str:
-        # Remove check for number of arguments and raise IndexError. New logic use all arguments
+        '''phone [name], Show the phone number of the contact.'''
         name = " ".join(args[0])
         contact = self.address_book.find(name)
         if not contact:
@@ -105,6 +111,7 @@ class Bot:
 
     @input_error
     def search_contact(self, *args) -> str:
+        '''search [arg], Search contact.'''
         if len(*args) != 1:
             raise IndexError("Incorrect number of arguments" + Fore.YELLOW + " Please try \"search _name_ \"")
         pattern, *_ = args[0]
@@ -113,6 +120,7 @@ class Bot:
 
     @input_error
     def get_all(self, *args) -> str:
+        '''all, Show all contacts.'''
         if len(*args):
             raise IndexError("\"all\" doesn\'t need arguments")
         if len(self.address_book) == 0:
@@ -129,6 +137,7 @@ class Bot:
 
     @input_error
     def add_birthday(self, *args) -> str:
+        '''add-birthday [name] [DD.MM.YYYY], Add birthday to existing contact.'''
         if len(*args) != 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add-birthday _name_ _DD.MM.YYYY_\"")
         name, birthday, *_ = args[0]
@@ -142,6 +151,7 @@ class Bot:
 
     @input_error
     def show_birthday(self, *args) -> str:
+        '''show-birthday [name], Show the birthday of an existing contact.'''
         if len(*args) != 1:
             raise IndexError("Incorrect number of arguments" + Fore.YELLOW + " Please try \"show-birthday _name_ \"")
         name, *_ = args[0]
@@ -152,6 +162,7 @@ class Bot:
 
     @input_error
     def birthdays(self, *args) -> str:
+        '''birthdays, Show upcoming birthdays.'''
         if len(*args):
             raise IndexError("\"birthdays\" doesn\'t need arguments")
         birth_dict = self.address_book.get_upcoming_birthdays()
@@ -162,6 +173,7 @@ class Bot:
 
     @input_error
     def add_email(self, *args) -> str:
+        '''add-email [name] [email], Add email to existing contact.'''
         if len(*args) != 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add-email _name_ _email@example.com_\"")
         name, email, *_ = args[0]
@@ -175,6 +187,7 @@ class Bot:
 
     @input_error
     def add_address(self, *args) -> str:
+        '''add-address [name] [address], Add address to existing contact.'''
         if len(*args) < 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add-address _name_ _address_\"")
 
@@ -230,6 +243,7 @@ class Bot:
 
     @input_error
     def delete_record(self, *args) -> str:
+        '''delete-contact [name], Delete contact.'''
         """ Remove contact """
         name, *_ = args[0]
         self.address_book.delete(name)
@@ -272,6 +286,7 @@ class Bot:
     
     @input_error
     def add_note(self, args):
+        '''add-note [title] [content], Add a new note.'''
         if len(args) < 2:
             return "Usage: add-note [title] [content]"
         title, content = args[0], " ".join(args[1:])
@@ -279,6 +294,7 @@ class Bot:
 
     @input_error
     def edit_note(self, args):
+        '''edit-note [title] [new_content], Edit an existing note.'''
         if len(args) < 2:
             return "Usage: edit-note [title] [new_content]"
         title, new_content = args[0], " ".join(args[1:])
@@ -286,6 +302,7 @@ class Bot:
 
     @input_error
     def delete_note(self, args):
+        '''delete-note [title], Delete an existing note.'''
         if len(args) < 1:
             return "Usage: delete-note [title]"
         title = args[0]
@@ -293,6 +310,7 @@ class Bot:
 
     @input_error
     def search_notes(self, args):
+        '''search-notes [keyword], Search for notes by keyword.'''
         if len(args) < 1:
             return "Usage: search-notes [keyword]"
         keyword = " ".join(args)
@@ -300,6 +318,7 @@ class Bot:
 
     @input_error
     def show_all_notes(self, args):
+        '''show-notes, Show all notes.'''
         return self.note_book.show_all_notes()
     
     @input_error
@@ -338,7 +357,7 @@ class Bot:
         funcs["add-address"] = self.add_address
         funcs["search"] = self.search_contact
         funcs["edit"] = self.edit_contact
-        funcs["delete"] = self.delete_record
+        funcs["delete-contact"] = self.delete_record
         funcs["notebook"] = self.notebook_mode  # Переход в режим NoteBook
         funcs["exit"] = self.finalize
         funcs["close"] = self.finalize
@@ -355,4 +374,36 @@ class Bot:
         funcs["search-by-tags"] = self.search_by_tags
         funcs["show-notes"] = self.show_all_notes
         return funcs
+
+    def print_handlers_list(self) ->list:
+        ''' Handler's list for hello message '''
+        handlers = self.register_handlers() # commands list
+        command_descriptions = []
+        seen_commands = set()
+
+        # Get all functions descriptions
+        for command, func in handlers.items():
+            doc = func.__doc__ or "No description available."
+            parts = doc.split(',', 1)
+            if len(parts) == 2:
+                name, description = parts
+                name = name.strip()
+                description = description.strip()
+            else:
+                name = doc.strip()
+                description = "No description available."
+
+            # Accepting only unique commands (exit || close could be 2 times in list)
+            if name not in seen_commands:
+                command_descriptions.append((name, description))
+                seen_commands.add(name)
+        
+        # Nice list making
+        max_len = max(len(cmd) for cmd, _ in command_descriptions)
+        command_list = (
+            f"{Fore.LIGHTGREEN_EX}\nAvailable commands:\n" +
+            "".join(f"{Fore.LIGHTYELLOW_EX}- {cmd.ljust(max_len)}{Style.RESET_ALL} - {desc}\n" for cmd, desc in command_descriptions)
+        )
+        return command_list
+  
   

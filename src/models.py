@@ -2,6 +2,8 @@ from datetime import datetime
 from os import remove
 from typing import Any, List
 from src.Validator import Validator
+from prompt_toolkit.completion import Completer, Completion
+
 
 
 class Field:
@@ -228,7 +230,6 @@ class UserRecord:
         address_inst = Address(address)
         self.__address = address_inst
 
-
 class Title(Field):
     """Class for representing the title of a note."""
     pass
@@ -266,3 +267,22 @@ class Note:
 
     def search_by_keyword(self, keyword: str) -> bool:
         return keyword in self.title.value or keyword in self.content.value or any(keyword in tag for tag in self.tags.value)
+
+
+class CustomCommandCompleter(Completer):
+    '''Custom class to detect first word in command line and give suggestions'''
+    def __init__(self, commands):
+        self.commands = commands
+
+    def get_completions(self, document, complete_event):
+        # Get text before cursor
+        text = document.text_before_cursor
+
+        # If space in string - skip
+        if ' ' in text:
+            return
+
+        # Works as usual
+        for cmd in self.commands:
+            if cmd.startswith(text):
+                yield Completion(cmd, start_position=-len(text))
