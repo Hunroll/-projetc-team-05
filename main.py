@@ -32,7 +32,6 @@ def main_loop():
                 print(handlers[command](args) + Style.RESET_ALL)
             else:
                 print(f"{Fore.RED}Unknown command!{Style.RESET_ALL}")
-                print(command_list)
 
     except Exception as err:
         print(f"Unexpected error: {err}")
