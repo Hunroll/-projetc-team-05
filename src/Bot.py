@@ -180,7 +180,7 @@ class Bot:
         if not contact:
             raise KeyError("Contact doesn\'t exist")
         
-        contact.add_address(address)
+        contact.address = addres
         return "Contact updated."
     
     @input_error
