@@ -13,14 +13,16 @@ class Bot:
     address_book: AddressBook
     note_book: NoteBook
 
-    def __init__(self, user_name: str): 
+    def __init__(self, user_name: str):
         self.__current_user = user_name.lower() # TODO: Normalize and validate user_name
         database = DataBase.load_data(self.current_user)
         self.address_book = database.address_book
         self.note_book = database.note_book
+    
         self.handlers = self.register_handlers()
         self.note_handlers = self.register_note_handlers()
     
+
 
     @property
     def current_user(self):
@@ -46,9 +48,12 @@ class Bot:
 
     @staticmethod
     #returns command key and args if any
-    def parse_input(inp: str) -> tuple[str, tuple]:
+    def parse_input(inp: str) -> tuple[str, str, str] | tuple[str, Any]:
         cmd, *args = inp.split()
         cmd = cmd.lower()
+        if cmd == "edit":
+            name, field = " ".join(args[:-1]), args[-1]
+            return cmd, name, field
         return cmd, *args
 
     @input_error
@@ -120,7 +125,7 @@ class Bot:
                 str(user.name), 
                 str(user.birthday) if user.birthday else 'Not set', 
                 '; '.join(user.phones),
-                str(user.emails) if user.emails else 'Not set',
+                '; '.join(user.emails) if user.emails else 'Not set',
                 str(user.address) if user.address else 'Not set' )
         return result_str
 
@@ -134,7 +139,7 @@ class Bot:
         if not contact:
             raise KeyError("Contact doesn\'t exist")
         
-        contact.add_birthday(birthday)
+        contact.birthday = birthday
         return "Contact updated."
 
     @input_error
@@ -184,7 +189,50 @@ class Bot:
         
         contact.address = address
         return "Contact updated."
-    
+
+    @input_error
+    def edit_contact(self, *args) -> str:
+        """
+        Edit contact field
+        first receive name of contact and name of field to edit
+        reask for field value to edit with additional dialog with user
+        """
+        if len(*args) < 2:
+            raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"edit _name_ _field_\"")
+        name, field, *_ = args[0]
+        for key in self.address_book.data:
+            if self.address_book.data[key].name.value.lower() == name.lower():
+                name = key
+                break
+        contact = self.address_book.find(name)
+        field = field.lower()  # lowercase field name for comparison
+        if not contact:
+            raise KeyError(f"Contact {name} doesn\'t exist")
+        if field == "phone":
+            old_phone = normalize_phone(input("Enter phone number to edit: "))
+            if old_phone not in contact.phones:
+                raise ValueError("Phone number not found")
+            new_phone = input("Enter new phone number: ")
+            contact.edit_phone(old_phone, new_phone)
+        elif field == "email":
+            old_email = input("Enter email to edit: ")
+            if old_email not in contact.emails:
+                raise ValueError("Email not found")
+            new_email = input("Enter new email: ")
+            contact.edit_email(old_email, new_email)
+        elif field == "address":
+            new_address = input("Enter new address: ")
+            contact.address = new_address
+        elif field == "birthday":
+            new_birthday = input("Enter new birthday: ")
+            contact.birthday = new_birthday
+        elif field == "name":
+            new_name = input("Enter new name: ")
+            contact.name = new_name
+        else:
+            raise ValueError("Incorrect field to edit. \nPlease use name of field:\n" + Fore.YELLOW + " \t \"name\", \"birthday\", \"phone\", \"email\" or \"address\"")
+        return "Contact updated"
+
     @input_error
     def delete_record(self, *args) -> str:
         """ Remove contact """
@@ -275,10 +323,12 @@ class Bot:
         funcs["add-email"] = self.add_email
         funcs["add-address"] = self.add_address
         funcs["search"] = self.search_contact
+        funcs["edit"] = self.edit_contact
         funcs["delete"] = self.delete_record
         funcs["notebook"] = lambda _: self.notebook_mode()  # Переход в режим NoteBook
         funcs["exit"] = self.finalize
         funcs["close"] = self.finalize
+        funcs["search"] = self.search_contact
         return funcs
 
     def register_note_handlers(self) -> dict:

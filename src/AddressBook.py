@@ -25,7 +25,7 @@ class AddressBook(UserDict):
                 result.append(self.data[key])
             if self.data[key].phones and any(pattern in phone for phone in self.data[key].phones):
                 result.append(self.data[key])
-            if self.data[key].birthday and pattern in self.data[key].birthday.value:
+            if self.data[key].birthday and pattern in str(self.data[key].birthday.value):
                 result.append(self.data[key])
             if self.data[key].emails and any(pattern.lower() in email.value.lower() for email in self.data[key].emails):
                 result.append(self.data[key])
