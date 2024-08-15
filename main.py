@@ -24,6 +24,7 @@ def main_loop():
             ("birthdays", "Show upcoming birthdays."),
             ("add-email [name] [email]", "Add email to existing contact."),
             ("add-address [name] [address]", "Add address to existing contact."),
+            ("edit [name] [field]", "Edit contact."),
             ("delete [name]", "Delete contact."),
             ("search [arg]", "Search contact."),
             ("exit || close", "Exit the bot.")
