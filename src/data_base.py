@@ -10,8 +10,8 @@ class DataBase:
     note_book: NoteBook
 
     @staticmethod
-    def save_data(address_book: AddressBook, note_book, username="guest"):
-        data_base = DataBase(address_book)
+    def save_data(address_book: AddressBook, note_book: NoteBook, username="guest"):
+        data_base = DataBase(address_book, note_book)
         with open(username + ".pkl", "wb") as f:
             pickle.dump(data_base, f)
             

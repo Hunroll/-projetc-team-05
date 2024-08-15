@@ -28,9 +28,11 @@ def main_loop():
             command, *args = bot.parse_input(inp)
             if command in ["exit", "close"]:
                 exit_ = True
-            #no "else" because some handlers may be registered
             if command in handlers:
                 print(handlers[command](args) + Style.RESET_ALL)
+            else:
+                print(f"{Fore.RED}Unknown command!{Style.RESET_ALL}")
+                print(command_list)
 
     except Exception as err:
         print(f"Unexpected error: {err}")

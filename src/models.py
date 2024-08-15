@@ -1,9 +1,9 @@
 from datetime import datetime
 from os import remove
 from typing import Any, List
-import re
-from src.normalize_phone import normalize_phone
+from src.Validator import Validator
 from prompt_toolkit.completion import Completer, Completion
+
 
 
 class Field:
@@ -23,7 +23,7 @@ class Name(Field):
 
 class Phone(Field):
     """Class for representing a phone field.
-    use normalize_phone function to normalize and validate phone number
+    use Validator to normalize and validate phone number
     __init__:
         phone: str
             The phone number of the contact in format '0XXXXXXXXX' or '+380XXXXXXXXX'
@@ -41,7 +41,7 @@ class Phone(Field):
 
     @value.setter
     def value(self, phone):
-        self.__value = normalize_phone(phone)
+        self.__value = Validator.normalize_phone(phone)
 
 
 
@@ -63,18 +63,15 @@ class Birthday(Field):
 
     @value.setter
     def value(self, value):
-        try:
-            value = datetime.strptime(value, "%d.%m.%Y")
-        except ValueError:
-            raise ValueError("Invalid date format. Use DD.MM.YYYY")
-        if value > datetime.now():
-            raise ValueError("Birthday can\'t be a future date")
-        self.__value = value
+        self.__value = Validator.validate_birthday(value)
 
     def __str__(self):
         return datetime.strftime(self.value, "%d.%m.%Y")
 
 class Email(Field):
+    """
+    Class for representing an email field with validation.
+    """
     def __init__(self, value):
         self.__value = None
         super().__init__(value)
@@ -85,10 +82,7 @@ class Email(Field):
 
     @value.setter
     def value(self, value):
-        # Регулярний вираз для перевірки електронної пошти
-        regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-        if not re.match(regex, value):
-            raise ValueError("Incorrect email format")
+        self.__value = Validator.validate_email(value)
 
 
 class Address(Field):
@@ -133,14 +127,11 @@ class UserRecord:
         if address:
             self.address = address
 
-        if emails:
-            self.emails = emails
-
     def __str__(self):
         return (f"Contact name: {self.name.value}, "
                 f"\nbirthday: {self.birthday if self.birthday else 'Not set'}, "
                 f"\nphones: {'; '.join(self.phones)}, "
-                f"\nemail: {'; '.join(self.emails)}, "
+                f"\nemail: {'; '.join(self.emails) if self.emails else 'Not set'}, "
                 f"\naddress: {self.address if self.address else 'Not set'}")
 
     @property
@@ -153,6 +144,8 @@ class UserRecord:
 
     @property
     def phones(self):
+        if len(self.__phones) == 0:
+            return None
         return (p.value for p in self.__phones)
 
     @phones.setter
@@ -199,7 +192,9 @@ class UserRecord:
 
     @property
     def emails(self):
-        return self.__emails
+        if len(self.__emails) == 0:
+            return None
+        return (email.value for email in self.__emails)
 
     @emails.setter
     def emails(self, emails: List[str]):
@@ -207,7 +202,11 @@ class UserRecord:
             self.add_email(email)
 
     def add_email(self, email):
-        self.__emails.append(Email(email))
+        email = Email(email)
+        if email not in self.__emails:
+            self.__emails.append(email)
+        else:
+            raise ValueError(f"[ERROR] Email {email} already exists in the record {self.name.value}")
 
     def remove_email(self, email):
         email = Email(email)
@@ -230,6 +229,45 @@ class UserRecord:
     def address(self, address):
         address_inst = Address(address)
         self.__address = address_inst
+
+class Title(Field):
+    """Class for representing the title of a note."""
+    pass
+
+class Content(Field):
+    """Class for representing the content of a note."""
+    pass
+
+class Tags(Field):
+    """Class for representing tags of a note."""
+    def __init__(self, value: List[str]):
+        super().__init__(value)
+
+class Note:
+    """Class for representing a note with title, content, and tags."""
+    def __init__(self, title: str, content: str, tags: List[str] = None):
+        self.title = Title(title)
+        self.content = Content(content)
+        self.tags = Tags(tags) if tags else Tags([])
+
+    def __str__(self):
+        tags_str = ', '.join(self.tags.value) if self.tags.value else 'No tags'
+        return f"Title: {self.title.value}\nContent: {self.content.value}\nTags: {tags_str}"
+
+    def add_tag(self, tag: str):
+        if tag not in self.tags.value:
+            self.tags.value.append(tag)
+
+    def remove_tag(self, tag: str):
+        if tag in self.tags.value:
+            self.tags.value.remove(tag)
+
+    def edit_content(self, new_content: str):
+        self.content = Content(new_content)
+
+    def search_by_keyword(self, keyword: str) -> bool:
+        return keyword in self.title.value or keyword in self.content.value or any(keyword in tag for tag in self.tags.value)
+
 
 class CustomCommandCompleter(Completer):
     '''Custom class to detect first word in command line and give suggestions'''
