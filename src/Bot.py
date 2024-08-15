@@ -23,7 +23,6 @@ class Bot:
         self.note_handlers = self.register_note_handlers()
     
 
-
     @property
     def current_user(self):
         return self.__current_user
@@ -242,19 +241,37 @@ class Bot:
     
     @input_error
     def notebook_mode(self, _):
-        print("Welcome to NoteBook mode! Type 'exit' to go back.")
+        notebook_command_list = [
+            ("add-note [title] [content]", "Add a new note."),
+            ("edit-note [title] [new_content]", "Edit an existing note."),
+            ("delete-note [title]", "Delete an existing note."),
+            ("add-tags [title] [tag1, tag2, ...]", "Add tags to a note."),
+            ("remove-tag [title] [tag]", "Remove a tag from a note."),
+            ("search-notes [keyword]", "Search for notes by keyword."),
+            ("search-by-tags [tag1, tag2, ...]", "Search for notes by tags."),
+            ("show-notes", "Show all notes."),
+            ("exit || close || main", "Exit NoteBook mode and return to main menu."),
+        ]
+        max_len = max(len(cmd) for cmd, _ in notebook_command_list)
+        notebook_command_list = (
+            f"{Fore.LIGHTGREEN_EX}\nAvailable commands:\n" +
+            "".join(f"{Fore.LIGHTYELLOW_EX}- {cmd.ljust(max_len)}{Style.RESET_ALL} - {desc}\n" for cmd, desc in notebook_command_list)
+        )
+        print("Welcome to NoteBook mode!")
+        print(notebook_command_list)
         exit_notebook = False
 
         while not exit_notebook:
             inp = input("notebook >> ").strip()
             command, *args = self.parse_input(inp)
 
-            if command in ["exit", "close"]:
+            if command in ["exit", "close", "main"]:
                 exit_notebook = True
             elif command in self.note_handlers:
                 print(self.note_handlers[command](args))
             else:
-                print("Unknown command. Type 'help' to see available commands.")
+                print(f"{Fore.RED}Unknown command!{Style.RESET_ALL}")
+                print(notebook_command_list)
         return "Navigating back to main menu."
     
     @input_error
@@ -304,12 +321,12 @@ class Bot:
         title, tag = args[0], args[1]
         return self.note_book.remove_tag_from_note(title, tag)
 
-    def search_by_tag(self, args):
+    @input_error
+    def search_by_tags(self, args):
         if len(args) < 1:
-            return "Usage: search-by-tag [tag]"
-        tag = args[0]
-        return self.note_book.search_notes_by_tag(tag)
-
+            return "Usage: search-by-tag [tag1, tag2, ...]"
+        return self.note_book.search_notes_by_tags(args)
+      
     def register_handlers(self) -> dict:
         # If you added new function, update Help text in /main.py
         funcs = dict()
@@ -329,7 +346,6 @@ class Bot:
         funcs["notebook"] = self.notebook_mode  # Переход в режим NoteBook
         funcs["exit"] = self.finalize
         funcs["close"] = self.finalize
-        funcs["search"] = self.search_contact
         return funcs
 
     def register_note_handlers(self) -> dict:
@@ -340,8 +356,7 @@ class Bot:
         funcs["add-tags"] = self.add_tags
         funcs["remove-tag"] = self.remove_tag
         funcs["search-notes"] = self.search_notes
-        funcs["search-by-tag"] = self.search_by_tag
-        funcs["search-by-tags"] = self.note_book.search_notes_by_tags
+        funcs["search-by-tags"] = self.search_by_tags
         funcs["show-notes"] = self.show_all_notes
         return funcs
   
