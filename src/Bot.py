@@ -4,18 +4,21 @@ from colorama import Fore, Style
 from src.AddressBook import AddressBook
 from src.data_base import DataBase
 from src.models import *
+from src.NoteBook import NoteBook
 
 CMD_EXIT="exit"
 CMD_NA="n/a"
 class Bot:
     current_user: str
     address_book: AddressBook
-    # note_book: NoteBook
+    note_book: NoteBook
 
     def __init__(self, user_name: str):
         self.__current_user = user_name.lower() # TODO: Normalize and validate user_name
         database = DataBase.load_data(self.current_user)
         self.address_book = database.address_book
+        self.note_book = database.note_book
+
 
     @property
     def current_user(self):
@@ -57,7 +60,7 @@ class Bot:
 
     @input_error
     def finalize(self, *args) -> str:
-        DataBase.save_data(self.address_book, None, self.current_user)
+        DataBase.save_data(self.address_book, self.note_book, self.current_user)
         return "DB is saved. Good bye!"
 
     @input_error
@@ -233,6 +236,33 @@ class Bot:
         self.address_book.delete(name)
         return f"Contact {name} removed."
 
+    def add_note(self, args):
+        if len(args) < 2:
+            return "Usage: add-note [title] [content]"
+        title, content = args[0], " ".join(args[1:])
+        return self.note_book.add_note(title, content)
+
+    def edit_note(self, args):
+        if len(args) < 2:
+            return "Usage: edit-note [title] [new_content]"
+        title, new_content = args[0], " ".join(args[1:])
+        return self.note_book.edit_note(title, new_content)
+
+    def delete_note(self, args):
+        if len(args) < 1:
+            return "Usage: delete-note [title]"
+        title = args[0]
+        return self.note_book.delete_note(title)
+
+    def search_notes(self, args):
+        if len(args) < 1:
+            return "Usage: search-notes [keyword]"
+        keyword = " ".join(args)
+        return self.note_book.search_notes(keyword)
+
+    def show_all_notes(self, args):
+        return self.note_book.show_all_notes()
+
     def register_handlers(self) -> dict:
         # If you added new function, update Help text in /main.py
         funcs = dict()
@@ -246,6 +276,12 @@ class Bot:
         funcs["birthdays"] = self.birthdays
         funcs["add-email"] = self.add_email
         funcs["add-address"] = self.add_address
+        funcs["search"] = self.search_contact
+        funcs["add-note"]= self.add_note
+        funcs["edit-note"]=self.edit_note
+        funcs["delete-note"]=self.delete_note
+        funcs["search-notes"]=self.search_notes
+        funcs["show-notes"] = self.show_all_notes
         funcs["edit"] = self.edit_contact
         funcs["delete"] = self.delete_record
         funcs["exit"] = self.finalize
