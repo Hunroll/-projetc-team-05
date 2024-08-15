@@ -3,6 +3,7 @@ from os import remove
 from typing import Any, List
 import re
 from src.normalize_phone import normalize_phone
+from prompt_toolkit.completion import Completer, Completion
 
 
 class Field:
@@ -229,3 +230,21 @@ class UserRecord:
     def address(self, address):
         address_inst = Address(address)
         self.__address = address_inst
+
+class CustomCommandCompleter(Completer):
+    '''Custom class to detect first word in command line and give suggestions'''
+    def __init__(self, commands):
+        self.commands = commands
+
+    def get_completions(self, document, complete_event):
+        # Get text before cursor
+        text = document.text_before_cursor
+
+        # If space in string - skip
+        if ' ' in text:
+            return
+
+        # Works as usual
+        for cmd in self.commands:
+            if cmd.startswith(text):
+                yield Completion(cmd, start_position=-len(text))
