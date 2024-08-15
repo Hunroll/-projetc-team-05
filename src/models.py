@@ -1,8 +1,7 @@
 from datetime import datetime
 from os import remove
 from typing import Any, List
-import re
-from src.normalize_phone import normalize_phone
+from src.Validator import Validator
 
 
 class Field:
@@ -22,7 +21,7 @@ class Name(Field):
 
 class Phone(Field):
     """Class for representing a phone field.
-    use normalize_phone function to normalize and validate phone number
+    use Validator to normalize and validate phone number
     __init__:
         phone: str
             The phone number of the contact in format '0XXXXXXXXX' or '+380XXXXXXXXX'
@@ -40,7 +39,7 @@ class Phone(Field):
 
     @value.setter
     def value(self, phone):
-        self.__value = normalize_phone(phone)
+        self.__value = Validator.normalize_phone(phone)
 
 
 
@@ -62,26 +61,17 @@ class Birthday(Field):
 
     @value.setter
     def value(self, value):
-        try:
-            value = datetime.strptime(value, "%d.%m.%Y")
-        except ValueError:
-            raise ValueError("Invalid date format. Use DD.MM.YYYY")
-        if value > datetime.now():
-            raise ValueError("Birthday can\'t be a future date")
-        self.__value = value
+        self.__value = Validator.validate_birthday(value)
 
     def __str__(self):
         return datetime.strftime(self.value, "%d.%m.%Y")
 
 class Email(Field):
     """
-    Class for representing an email field with validation by regex.
+    Class for representing an email field with validation.
     """
-    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
     def __init__(self, value):
-        if not re.match(self.regex, value):
-            raise ValueError("Incorrect email format")
-        self.__value = value
+        self.__value = None
         super().__init__(value)
 
     @property
@@ -89,10 +79,8 @@ class Email(Field):
         return self.__value
 
     @value.setter
-    def value(self, value, regex=regex):
-        # Регулярний вираз для перевірки електронної пошти
-        if not re.match(regex, value):
-            raise ValueError("Incorrect email format")
+    def value(self, value):
+        self.__value = Validator.validate_email(value)
 
 
 class Address(Field):
