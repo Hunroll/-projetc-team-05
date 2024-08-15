@@ -191,8 +191,8 @@ class Bot:
         if len(*args) < 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add-address _name_ _address_\"")
 
-        name = args[0][0]
-        address = ' '.join(args[0][1:])
+        name, *address_parts = args[0]
+        address = ' '.join(address_parts)
         
         contact = self.address_book.find(name)
         if not contact:
@@ -217,7 +217,7 @@ class Bot:
             raise KeyError(f"Contact {name} doesn\'t exist")
         match field:
             case "phone":
-                old_phone = normalize_phone(input("Enter phone number to edit: "))
+                old_phone = Validator.normalize_phone(input("Enter phone number to edit: "))
                 if old_phone not in contact.phones:
                     raise ValueError("Phone number not found")
                 new_phone = input("Enter new phone number: ")
@@ -285,62 +285,64 @@ class Bot:
         return "Navigating back to main menu."
     
     @input_error
-    def add_note(self, args):
+    def add_note(self, *args):
         '''add-note [title] [content], Add a new note.'''
-        if len(args) < 2:
+        if len(*args) < 2:
             return "Usage: add-note [title] [content]"
-        title, content = args[0], " ".join(args[1:])
+        title, *content_parts = args[0]
+        content = " ".join(content_parts)
         return self.note_book.add_note(title, content)
 
     @input_error
-    def edit_note(self, args):
+    def edit_note(self, *args):
         '''edit-note [title] [new_content], Edit an existing note.'''
-        if len(args) < 2:
+        if len(*args) < 2:
             return "Usage: edit-note [title] [new_content]"
-        title, new_content = args[0], " ".join(args[1:])
+        title, *new_content_parts = args[0]
+        new_content = " ".join(new_content_parts)
         return self.note_book.edit_note(title, new_content)
 
     @input_error
-    def delete_note(self, args):
+    def delete_note(self, *args):
         '''delete-note [title], Delete an existing note.'''
-        if len(args) < 1:
+        if len(*args) < 1:
             return "Usage: delete-note [title]"
-        title = args[0]
+        title, *_ = args[0]
         return self.note_book.delete_note(title)
 
     @input_error
-    def search_notes(self, args):
+    def search_notes(self, *args):
         '''search-notes [keyword], Search for notes by keyword.'''
-        if len(args) < 1:
+        if len(*args) < 1:
             return "Usage: search-notes [keyword]"
-        keyword = " ".join(args)
+        keyword = " ".join(*args)
         return self.note_book.search_notes(keyword)
 
     @input_error
-    def show_all_notes(self, args):
+    def show_all_notes(self, *args):
         '''show-notes, Show all notes.'''
         return self.note_book.show_all_notes()
     
     @input_error
-    def add_tags(self, args):
-        if len(args) < 2:
+    def add_tags(self, *args):
+        if len(*args) < 2:
             return "Usage: add-tag [title] [tag1, tag2, ...]"
-        title = args[0]
-        tags = args[1:]
+        title, *tags = args[0]
         return self.note_book.add_tags_to_note(title, tags)
 
     @input_error
-    def remove_tag(self, args):
-        if len(args) < 2:
+    def remove_tag(self, *args):
+        if len(*args) < 2:
             return "Usage: remove-tag [title] [tag]"
-        title, tag = args[0], args[1]
+        title, tag, *_ = args[0]
         return self.note_book.remove_tag_from_note(title, tag)
 
     @input_error
-    def search_by_tags(self, args):
-        if len(args) < 1:
-            return "Usage: search-by-tag [tag1, tag2, ...]"
-        return self.note_book.search_notes_by_tags(args)
+    def search_by_tags(self, *args):
+        if len(*args) < 1:
+            return "Usage: search-by-tags [tag1, tag2, ...]"
+        tags = args[0]
+        return self.note_book.search_notes_by_tags(tags)
       
     def register_handlers(self) -> dict:
         # If you added new function, update Help text in /main.py
