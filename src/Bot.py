@@ -204,29 +204,30 @@ class Bot:
         field = field.lower()  # lowercase field name for comparison
         if not contact:
             raise KeyError(f"Contact {name} doesn\'t exist")
-        if field == "phone":
-            old_phone = normalize_phone(input("Enter phone number to edit: "))
-            if old_phone not in contact.phones:
-                raise ValueError("Phone number not found")
-            new_phone = input("Enter new phone number: ")
-            contact.edit_phone(old_phone, new_phone)
-        elif field == "email":
-            old_email = input("Enter email to edit: ")
-            if old_email not in contact.emails:
-                raise ValueError("Email not found")
-            new_email = input("Enter new email: ")
-            contact.edit_email(old_email, new_email)
-        elif field == "address":
-            new_address = input("Enter new address: ")
-            contact.address = new_address
-        elif field == "birthday":
-            new_birthday = input("Enter new birthday: ")
-            contact.birthday = new_birthday
-        elif field == "name":
-            new_name = input("Enter new name: ")
-            contact.name = new_name
-        else:
-            raise ValueError("Incorrect field to edit. \nPlease use name of field:\n" + Fore.YELLOW + " \t \"name\", \"birthday\", \"phone\", \"email\" or \"address\"")
+        match field:
+            case "phone":
+                old_phone = normalize_phone(input("Enter phone number to edit: "))
+                if old_phone not in contact.phones:
+                    raise ValueError("Phone number not found")
+                new_phone = input("Enter new phone number: ")
+                contact.edit_phone(old_phone, new_phone)
+            case "email":
+                old_email = input("Enter email to edit: ")
+                if old_email not in contact.emails:
+                    raise ValueError("Email not found")
+                new_email = input("Enter new email: ")
+                contact.edit_email(old_email, new_email)
+            case "address":
+                new_address = input("Enter new address: ")
+                contact.address = new_address
+            case "birthday":
+                new_birthday = input("Enter new birthday: ")
+                contact.birthday = new_birthday
+            case "name":
+                new_name = input("Enter new name: ")
+                contact.name = new_name
+            case _:
+                raise ValueError("Incorrect field to edit. \nPlease use name of field:\n" + Fore.YELLOW + " \t \"name\", \"birthday\", \"phone\", \"email\" or \"address\"")
         return "Contact updated"
 
     @input_error
