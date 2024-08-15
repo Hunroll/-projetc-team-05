@@ -209,7 +209,7 @@ class Bot:
         if not contact:
             raise KeyError(f"Contact {name} doesn\'t exist")
         if field == "phone":
-            old_phone = normalize_phone(input("Enter phone number to edit: "))
+            old_phone = Validator.normalize_phone(input("Enter phone number to edit: "))
             if old_phone not in contact.phones:
                 raise ValueError("Phone number not found")
             new_phone = input("Enter new phone number: ")

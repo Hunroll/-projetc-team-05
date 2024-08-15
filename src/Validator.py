@@ -41,6 +41,10 @@ class Validator:
             date = datetime.strptime(birthday, "%d.%m.%Y")
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
+        # перевірка що дата не є 29 лютого
+        if date.day == 29 and date.month == 2:
+            raise ValueError("Birthday cannot be 29th February. Use 28.02.YYYY or 01.03.YYYY")
+        # перевірка що дата не в майбутньому
         if date > datetime.now():
             raise ValueError("Birthday can't be a future date")
         return date
