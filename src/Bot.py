@@ -97,9 +97,8 @@ class Bot:
 
     @input_error
     def get_phone(self, *args) -> str:
-        if len(*args) != 1:
-            raise IndexError("Incorrect number of arguments" + Fore.YELLOW + " Please try \"phone _name_ \"")
-        name, *_ = args[0]
+        # Remove check for number of arguments and raise IndexError. New logic use all arguments
+        name = " ".join(args[0])
         contact = self.address_book.find(name)
         if not contact:
             raise KeyError("Contact doesn\'t exist")
@@ -200,10 +199,6 @@ class Bot:
         if len(*args) < 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"edit _name_ _field_\"")
         name, field, *_ = args[0]
-        for key in self.address_book.data:
-            if self.address_book.data[key].name.value.lower() == name.lower():
-                name = key
-                break
         contact = self.address_book.find(name)
         field = field.lower()  # lowercase field name for comparison
         if not contact:
@@ -318,7 +313,7 @@ class Bot:
         funcs["hello"] = self.say_hello
         funcs["add"] = self.add_contact
         funcs["add-birthday"] = self.add_birthday
-        funcs["change"] = self.change_contact
+        funcs["change"] = self.change_contact  # MARK TO DELETE
         funcs["phone"] = self.get_phone
         funcs["show-birthday"] = self.show_birthday
         funcs["all"] = self.get_all
