@@ -96,9 +96,8 @@ class Bot:
 
     @input_error
     def get_phone(self, *args) -> str:
-        if len(*args) != 1:
-            raise IndexError("Incorrect number of arguments" + Fore.YELLOW + " Please try \"phone _name_ \"")
-        name, *_ = args[0]
+        # Remove check for number of arguments and raise IndexError. New logic use all arguments
+        name = " ".join(args[0])
         contact = self.address_book.find(name)
         if not contact:
             raise KeyError("Contact doesn\'t exist")
@@ -199,37 +198,34 @@ class Bot:
         if len(*args) < 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"edit _name_ _field_\"")
         name, field, *_ = args[0]
-        for key in self.address_book.data:
-            if self.address_book.data[key].name.value.lower() == name.lower():
-                name = key
-                break
         contact = self.address_book.find(name)
         field = field.lower()  # lowercase field name for comparison
         if not contact:
             raise KeyError(f"Contact {name} doesn\'t exist")
-        if field == "phone":
-            old_phone = normalize_phone(input("Enter phone number to edit: "))
-            if old_phone not in contact.phones:
-                raise ValueError("Phone number not found")
-            new_phone = input("Enter new phone number: ")
-            contact.edit_phone(old_phone, new_phone)
-        elif field == "email":
-            old_email = input("Enter email to edit: ")
-            if old_email not in contact.emails:
-                raise ValueError("Email not found")
-            new_email = input("Enter new email: ")
-            contact.edit_email(old_email, new_email)
-        elif field == "address":
-            new_address = input("Enter new address: ")
-            contact.address = new_address
-        elif field == "birthday":
-            new_birthday = input("Enter new birthday: ")
-            contact.birthday = new_birthday
-        elif field == "name":
-            new_name = input("Enter new name: ")
-            contact.name = new_name
-        else:
-            raise ValueError("Incorrect field to edit. \nPlease use name of field:\n" + Fore.YELLOW + " \t \"name\", \"birthday\", \"phone\", \"email\" or \"address\"")
+        match field:
+            case "phone":
+                old_phone = normalize_phone(input("Enter phone number to edit: "))
+                if old_phone not in contact.phones:
+                    raise ValueError("Phone number not found")
+                new_phone = input("Enter new phone number: ")
+                contact.edit_phone(old_phone, new_phone)
+            case "email":
+                old_email = input("Enter email to edit: ")
+                if old_email not in contact.emails:
+                    raise ValueError("Email not found")
+                new_email = input("Enter new email: ")
+                contact.edit_email(old_email, new_email)
+            case "address":
+                new_address = input("Enter new address: ")
+                contact.address = new_address
+            case "birthday":
+                new_birthday = input("Enter new birthday: ")
+                contact.birthday = new_birthday
+            case "name":
+                new_name = input("Enter new name: ")
+                contact.name = new_name
+            case _:
+                raise ValueError("Incorrect field to edit. \nPlease use name of field:\n" + Fore.YELLOW + " \t \"name\", \"birthday\", \"phone\", \"email\" or \"address\"")
         return "Contact updated"
 
     @input_error
@@ -333,7 +329,7 @@ class Bot:
         funcs["hello"] = self.say_hello
         funcs["add"] = self.add_contact
         funcs["add-birthday"] = self.add_birthday
-        funcs["change"] = self.change_contact
+        funcs["change"] = self.change_contact  # MARK TO DELETE
         funcs["phone"] = self.get_phone
         funcs["show-birthday"] = self.show_birthday
         funcs["all"] = self.get_all
