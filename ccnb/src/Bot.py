@@ -1,13 +1,12 @@
-from datetime import datetime, timedelta
-from colorama import Fore, Style
-
-from src.AddressBook import AddressBook
-from src.NoteBook import NoteBook
-from src.data_base import DataBase
-from src.models import *
-from src.Validator import Validator
-from prompt_toolkit import PromptSession # For autocomplete commands
 import functools  # Metadata import from function into decorator
+
+from colorama import Fore, Style
+from prompt_toolkit import PromptSession  # For autocomplete commands
+
+from ccnb.src.AddressBook import AddressBook
+from ccnb.src.NoteBook import NoteBook
+from ccnb.src.data_base import DataBase
+from ccnb.src.models import *
 
 CMD_EXIT="exit"
 CMD_NA="n/a"
@@ -82,7 +81,7 @@ class Bot:
     
     @staticmethod
     @input_error
-    def launcher():
+    def launcher(bot=None):
         """ Bot launcher """
         try:
             bot = Bot(input("Enter login >>> "))
@@ -98,7 +97,7 @@ class Bot:
             print (Style.RESET_ALL)
 
     @input_error
-    def addressbook_mode(self):
+    def addressbook_mode(self, session=None, command_completer=None):
         """addressbook, Switch to addressbook."""
 
         # Get addressbook handlers list
@@ -136,7 +135,7 @@ class Bot:
         
 
     @input_error
-    def notebook_mode(self, _):
+    def notebook_mode(self, _, session=None, command_completer=None):
         """notebook, Switch to notebook."""
         
         # Get notebook handlers list
@@ -192,7 +191,7 @@ class Bot:
         """add [name] [phone], Add a new contact."""
         if len(*args) != 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add _name_ _phone_\"")
-        name, phone = args[0]
+        name, phone, *_ = args[0]
         mess = "Contact already exist. Just updated with new phone."
         contact = self.address_book.find(name)
         if not contact:
@@ -231,7 +230,7 @@ class Bot:
             result_str += "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format(
                 str(user.name),
                 str(user.birthday) if user.birthday else 'Not set',
-                '; '.join(user.phones),
+                '; '.join(user.phones) if user.phones else 'Not set',
                 '; '.join(user.emails) if user.emails else 'Not set',
                 str(user.address) if user.address else 'Not set')
         return result_str
@@ -481,7 +480,7 @@ class Bot:
 
         return funcs
 
-    def print_handlers_list(self, handlers) ->list:
+    def print_handlers_list(self, handlers) -> str:
         """Handler's list for hello message"""
         command_descriptions = []
         seen_commands = set()

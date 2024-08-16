@@ -1,5 +1,3 @@
-from Bot import *
-
 global test_count, successfull_count, test_name
 def assert_eq(a, b, comment: str):
     global test_count, successfull_count

@@ -1,7 +1,7 @@
 from collections import UserDict
 from typing import List
 
-from src.models import Note
+from ccnb.src.models import Note
 
 
 class NoteBook(UserDict):
