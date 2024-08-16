@@ -260,6 +260,8 @@ class Bot:
             ("search-notes [keyword]", "Search for notes by keyword."),
             ("search-by-tags [tag1, tag2, ...]", "Search for notes by tags."),
             ("show-notes", "Show all notes."),
+            ("sort-by-tags-count", "Show notes sorted by tags count."),
+            ("sort-by-tags-alphabetically", "Show notes sorted by tags alphabetically."),
             ("exit || close || main", "Exit NoteBook mode and return to main menu."),
         ]
         max_len = max(len(cmd) for cmd, _ in notebook_command_list)
@@ -343,6 +345,16 @@ class Bot:
             return "Usage: search-by-tags [tag1, tag2, ...]"
         tags = args[0]
         return self.note_book.search_notes_by_tags(tags)
+    
+    @input_error
+    def sort_notes_by_tag_count(self, *args):
+        '''sort-by-tags-count, Show notes sorted by tags count.'''
+        return self.note_book.sort_notes_by_tag_count()
+    
+    @input_error
+    def sort_notes_by_tags_alphabetically(self, *args):
+        '''sort-by-tags-alphabetically, Show notes sorted by tags alphabetically.'''
+        return self.note_book.sort_notes_by_tags_alphabetically()
       
     def register_handlers(self) -> dict:
         # If you added new function, update Help text in /main.py
@@ -375,6 +387,8 @@ class Bot:
         funcs["search-notes"] = self.search_notes
         funcs["search-by-tags"] = self.search_by_tags
         funcs["show-notes"] = self.show_all_notes
+        funcs["sort-by-tags-count"] = self.sort_notes_by_tag_count
+        funcs["sort-by-tags-alphabetically"] = self.sort_notes_by_tags_alphabetically
         return funcs
 
     def print_handlers_list(self) ->list:
