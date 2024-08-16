@@ -3,8 +3,8 @@ import pickle
 from dataclasses import dataclass
 from pathlib import Path
 
-from src.AddressBook import AddressBook
-from src.NoteBook import NoteBook
+from ccnb.src.AddressBook import AddressBook
+from ccnb.src.NoteBook import NoteBook
 
 USER_HOME = os.getenv('HOME') or os.getenv('USERPROFILE') or os.getenv('HOMEPATH')
 # CCNB_PATH use for environment variable, if it is not set, then use default path
