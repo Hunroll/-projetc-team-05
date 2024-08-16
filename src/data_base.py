@@ -1,11 +1,14 @@
 import os
-from dataclasses import dataclass
 import pickle
+from dataclasses import dataclass
+from pathlib import Path
+
 from src.AddressBook import AddressBook
 from src.NoteBook import NoteBook
 
 USER_HOME = os.getenv('HOME') or os.getenv('USERPROFILE') or os.getenv('HOMEPATH')
-CCNB_HOME = os.getenv('CCNB_HOME') or os.path.join(USER_HOME, '.ccnb')
+#
+CCNB_HOME = os.getenv('CCNB_HOME') if not Path(os.getenv('CCNB_HOME')).is_file() else os.path.join(USER_HOME, '.ccnb')
 
 @dataclass
 class DataBase:
@@ -23,18 +26,21 @@ class DataBase:
     def save_data(address_book: AddressBook, note_book: NoteBook, username="guest"):
         data_base = DataBase(address_book, note_book)
         if not os.path.exists(CCNB_HOME):
-            os.makedirs(CCNB_HOME)
+            try:
+                os.makedirs(CCNB_HOME)
+            except OSError:
+                print(f"[ERROR] Creation of the directory {CCNB_HOME} failed")
         filepath = os.path.join(CCNB_HOME, username + ".pkl")
         with open(filepath, "wb") as f:
             pickle.dump(data_base, f)
-        print(f"Data saved to {filepath}")
+        print(f"[LOG] Data saved to {filepath}")
             
     @staticmethod
     def load_data(username="guest"):
         try:
             filepath = os.path.join(CCNB_HOME, username + ".pkl")
             with open(filepath, "rb") as f:
-                print(f"Loading data from {filepath}")
+                print(f"[LOG] Loading data from {filepath}")
                 return pickle.load(f)
         except FileNotFoundError:
             return DataBase(AddressBook(), NoteBook())  # Повернення нової адресної книги і блокнота, якщо файл не знайдено
