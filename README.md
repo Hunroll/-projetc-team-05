@@ -1,4 +1,5 @@
-# CLI contacts and notes bot
+# CLI contacts and notes bot (CNNB)
+
 This is a simple CLI contacts and notes bot that allows you to store and retrieve contacts and notes.
 
 ## Introduction:
@@ -62,9 +63,12 @@ Available commands:
 
 ## Installation:
 #TODO: Add installation instructions
+There will be instruction on how to install the bot from test.pypi.org (e.g.
+`pip install -i https://test.pypi.org/simple/ cnnb`)
 
 ## Usage:
 #TODO: Add usage instructions
+Here will be instructions on how to run the bot (e.g. `python3 main.py`)
 
 ## Contributors:
 - [Huroll](https://github.com/Hunroll)
