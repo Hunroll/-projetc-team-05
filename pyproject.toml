@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ccnb"
+version = "0.0.1a1"
+authors = [
+    { name = "Hunroll" },
+    { name = "Guru01100101" },
+    { name = "etosomsemnefiltry" },
+    { name = "valerii-derkach" },
+    { name = "bilancdt" },
+]
+description = "A simple CLI contact bot to manage your contacts in the terminal. Have additional features like search, delete, and update. Can manage notes too."
+readme = "README.md"
+license = { file = "LICENSE" }
+dependencies = [
+    "colorama",
+    "prompt_toolkit",
+    "wcwidth",
+]
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: OS Independent",
+    "Topic :: Utilities",
+]
+
+[project.urls]
+homepage = "https://github.com/Hunroll/-projetc-team-05"
+issues = "https://github.com/Hunroll/-projetc-team-05/issues"
+
+[project.scripts]
+assistent = "assistant.main:main_loop"
+
+#[tool.setuptools]
+#include_package_data = false
+
+[tool.setuptools.packages]
+find = { }
