@@ -1,45 +1,7 @@
-from prompt_toolkit import PromptSession  # For autocomplete commands
+from src.Bot import*
 
-from src.Bot import *
-
-
-def main_loop(bot=None):
-    # Autocomplete session
-    try:
-        exit_ = False
-
-        bot = Bot(input("Enter login >>> "))
-        handlers = bot.register_handlers()
-
-        # Let's make nice and readable help message
-        print(bot.print_handlers_list())
-
-        # guess user input
-        session = PromptSession()
-        handlers_command_list = list(handlers.keys())
-        command_completer = CustomCommandCompleter(handlers_command_list)  
-
-        while not exit_:
-            inp = session.prompt("bot_shell >> ", completer=command_completer).strip()
-            
-            command, *args = bot.parse_input(inp)
-            if command in ["exit", "close"]:
-                exit_ = True
-            if command in handlers:
-                print(handlers[command](args) + Style.RESET_ALL)
-            else:
-                print(f"{Fore.RED}Unknown command!{Style.RESET_ALL}")
-
-    except Exception as err:
-        print(f"Unexpected error: {err}")
-        if bot:
-            print("Trying to save DB state.")
-            # TODO: Adding valid save_data method
-            # bot.save_data()
-        return None
-    finally:
-        print (Style.RESET_ALL)
-
+def main_loop():
+    Bot.launcher()
         
 if __name__ == "__main__":
     main_loop()
