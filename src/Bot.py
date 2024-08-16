@@ -1,12 +1,12 @@
-from datetime import datetime, timedelta
+import functools  # Metadata import from function into decorator
+
 from colorama import Fore, Style
+from prompt_toolkit import PromptSession  # For autocomplete commands
 
 from src.AddressBook import AddressBook
 from src.NoteBook import NoteBook
 from src.data_base import DataBase
 from src.models import *
-from prompt_toolkit import PromptSession # For autocomplete commands
-import functools  # Metadata import from function into decorator
 
 CMD_EXIT="exit"
 CMD_NA="n/a"
@@ -98,7 +98,8 @@ class Bot:
 
     @input_error
     def addressbook_mode(self):
-        """addressbook, Switch to addressbook."""
+        """addressbook, Switch handler to addressbook mode."""
+        """Start addressbook handlers and autofeeling commands."""
 
         # Get addressbook handlers list
         handlers = self.addressbook_handlers
@@ -136,7 +137,10 @@ class Bot:
 
     @input_error
     def notebook_mode(self, _):
-        """notebook, Switch to notebook."""
+        """notebook, Switch handler to notebook mode."""
+        """Switch handler to notebook mode.
+        Notebook mode has its own set of commands and handlers.
+        Use subloop to navigate through notebook commands."""
         
         # Get notebook handlers list
         handlers = self.note_handlers
@@ -305,7 +309,7 @@ class Bot:
 
     @input_error
     def edit_contact(self, *args) -> str:
-        """edit [name] [field], Edit contaсt information."""
+        """edit [name] [field], Edit contact information."""
         if len(*args) < 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"edit _name_ _field_\"")
         name, field, *_ = args[0]
@@ -321,7 +325,7 @@ class Bot:
                 new_phone = input("Enter new phone number: ")
                 contact.edit_phone(old_phone, new_phone)
             case "email":
-                if contact.emails == None:
+                if contact.emails is None or len(contact.emails) == 0:
                     raise KeyError('Nothing to edit. Please use "add-email" command')
                 old_email = input("Enter email to edit: ")
                 if old_email not in contact.emails:
@@ -344,7 +348,6 @@ class Bot:
     @input_error
     def delete_record(self, *args) -> str:
         """delete [name], Delete contact."""
-        """ Remove contact """
         name, *_ = args[0]
         self.address_book.delete(name)
         return f"Contact {name} removed."
@@ -390,7 +393,7 @@ class Bot:
     
     @input_error
     def add_tags(self, *args):
-        """add-tag [title] [tag1, tag2, ...], Add tags in the note."""
+        """add-tag [title] [tag1, tag2, ...], Add tags to the note. All tags should be separated by space."""
         if len(*args) < 2:
             return "Usage: add-tag [title] [tag1, tag2, ...]"
         title, *tags = args[0]
@@ -398,15 +401,15 @@ class Bot:
 
     @input_error
     def remove_tag(self, *args):
-        """remove-tag [title] [tag], Remove certain tag."""
+        """remove-tag [title] [tag1, tag2, ...], Remove certain tags from the note. All tags should be separated by space."""
         if len(*args) < 2:
             return "Usage: remove-tag [title] [tag]"
-        title, tag, *_ = args[0]
-        return self.note_book.remove_tag_from_note(title, tag)
+        title, *tags = args[0]
+        return "\n".join(self.note_book.remove_tag_from_note(title, tag) for tag in tags)
 
     @input_error
     def search_by_tags(self, *args):
-        """search-by-tags [tag1, tag2, ...], Show notes sorted by tags count."""
+        """search-by-tags [tag1, tag2, ...], Show notes filtered by tags count. All tags should be separated by space."""
         if len(*args) < 1:
             return "Usage: search-by-tags [tag1, tag2, ...]"
         tags = args[0]
@@ -414,9 +417,9 @@ class Bot:
     
     @input_error
     def sort_notes_by_tag_count(self, *args):
-        """sort-by-tags-count, Show notes sorted by tags count."""
+        """sort-by-tags-count, Show notes sorted by tags counts."""
         return self.note_book.sort_notes_by_tag_count()
-    
+
     @input_error
     def sort_notes_by_tags_alphabetically(self, *args):
         """sort-by-tags-alphabetically, Show notes sorted by tags alphabetically."""
@@ -480,7 +483,7 @@ class Bot:
 
         return funcs
 
-    def print_handlers_list(self, handlers) ->list:
+    def print_handlers_list(self, handlers) -> str:
         """Handler's list for hello message"""
         command_descriptions = []
         seen_commands = set()
@@ -509,5 +512,3 @@ class Bot:
             "".join(f"{Fore.LIGHTYELLOW_EX}- {cmd.ljust(max_len)}{Style.RESET_ALL} - {desc}\n" for cmd, desc in command_descriptions)
         )
         return command_list
-  
-  
