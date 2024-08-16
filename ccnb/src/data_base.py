@@ -34,14 +34,15 @@ class DataBase:
         filepath = os.path.join(CCNB_PATH, username + ".pkl")
         with open(filepath, "wb") as f:
             pickle.dump(data_base, f)
-        print(f"[LOG] Data saved to {filepath}")
+        # print(f"[LOG] Data saved to {filepath}")
             
     @staticmethod
     def load_data(username="guest"):
         try:
             filepath = os.path.join(CCNB_PATH, username + ".pkl")
             with open(filepath, "rb") as f:
-                print(f"[LOG] Loading data from {filepath}")
+                # print(f"[LOG] Loading data from {filepath}")
                 return pickle.load(f)
         except FileNotFoundError:
-            return DataBase(AddressBook(), NoteBook())  # Повернення нової адресної книги і блокнота, якщо файл не знайдено
+            # Return new AddressBook and NoteBook if file not found
+            return DataBase(AddressBook(), NoteBook())
