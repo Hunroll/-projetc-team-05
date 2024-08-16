@@ -21,8 +21,8 @@ hello
     - Add a new contact.
 - add-birthday [name] [DD.MM.YYYY] 
     - Add birthday to existing contact.
-- change [name] [phone] 
-    - Change an existing contact's phone.
+- edit [name] [field]
+    - Change an existing contact's phone. field could be "name", "birthday", "phone", "email" or "address"
 - phone [name] 
     - Show the phone number of the contact.
 - show-birthday [name] 
@@ -37,7 +37,7 @@ hello
     - Add address to existing contact.
 - search [arg]
     - Search contact.
-- delete-contact [name] 
+- delete [name] 
     - Delete contact.
 - exit || close 
     - Exit the bot.
@@ -45,19 +45,19 @@ hello
 #### Notes:
 Available commands:
 
-- add-note [title] [content]         
+- add [title] [content]         
   - Add a new note.
-- edit-note [title] [new_content]    
+- edit [title] [new_content]    
   - Edit an existing note.
-- delete-note [title]                
+- delete [title]                
   - Delete an existing note.
-- add-tags [title] [tag1, tag2, ...] 
+- add-tags [title] [tag1,tag2,...] 
   - Add tags to a note.
 - remove-tag [title] [tag]           
   - Remove a tag from a note.
 - search-notes [keyword]             
   - Search for notes by keyword.
-- search-by-tags [tag1, tag2, ...]   
+- search-by-tags [tag1,tag2,...]   
   - Search for notes by tags.
 - show-notes                         
   - Show all notes.

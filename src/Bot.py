@@ -5,6 +5,7 @@ from src.AddressBook import AddressBook
 from src.NoteBook import NoteBook
 from src.data_base import DataBase
 from src.models import *
+from src.Validator import Validator
 from prompt_toolkit import PromptSession # For autocomplete commands
 import functools  # Metadata import from function into decorator
 
@@ -25,7 +26,7 @@ class Bot:
     note_book: NoteBook
 
     def __init__(self, user_name: str):
-        self.__current_user = user_name.lower() # TODO: Normalize and validate user_name
+        self.__current_user = Validator.normalize_username(user_name)
         database = DataBase.load_data(self.current_user)
         self.address_book = database.address_book
         self.note_book = database.note_book
@@ -390,9 +391,9 @@ class Bot:
     
     @input_error
     def add_tags(self, *args):
-        """add-tag [title] [tag1, tag2, ...], Add tags in the note."""
+        """add-tags [title] [tag1,tag2,...], Add tags in the note."""
         if len(*args) < 2:
-            return "Usage: add-tag [title] [tag1, tag2, ...]"
+            return "Usage: add-tags [title] [tag1,tag2,...]"
         title, *tags = args[0]
         return self.note_book.add_tags_to_note(title, tags)
 
@@ -406,9 +407,9 @@ class Bot:
 
     @input_error
     def search_by_tags(self, *args):
-        """search-by-tags [tag1, tag2, ...], Show notes sorted by tags count."""
+        """search-by-tags [tag1,tag2,...], Show notes sorted by tags count."""
         if len(*args) < 1:
-            return "Usage: search-by-tags [tag1, tag2, ...]"
+            return "Usage: search-by-tags [tag1,tag2,...]"
         tags = args[0]
         return self.note_book.search_notes_by_tags(tags)
     

@@ -31,7 +31,7 @@ class DataBase:
                 os.makedirs(CCNB_PATH)
             except OSError:
                 print(f"[ERROR] Creation of the directory {CCNB_PATH} failed")
-        filepath = os.path.join(CCNB_PATH, username + ".pkl")
+        filepath = os.path.join(CCNB_PATH, username.lower() + ".pkl")
         with open(filepath, "wb") as f:
             pickle.dump(data_base, f)
         print(f"[LOG] Data saved to {filepath}")
@@ -39,7 +39,7 @@ class DataBase:
     @staticmethod
     def load_data(username="guest"):
         try:
-            filepath = os.path.join(CCNB_PATH, username + ".pkl")
+            filepath = os.path.join(CCNB_PATH, username.lower() + ".pkl")
             with open(filepath, "rb") as f:
                 print(f"[LOG] Loading data from {filepath}")
                 return pickle.load(f)
