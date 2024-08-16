@@ -91,7 +91,8 @@ class NoteBook(UserDict):
         # Сортуємо нотатки за кількістю тегів, з найбільшою кількістю на початку, нотатки без тегів в кінці
         sorted_notes = sorted(
             self.data.items(),
-            key=lambda item: (-len(item[1].tags.value), sorted(item[1].tags.value))
+            key=lambda item: len(item[1].tags.value),
+            reverse=True
         )
 
         if not sorted_notes:
