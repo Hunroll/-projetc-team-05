@@ -6,6 +6,7 @@ from src.NoteBook import NoteBook
 from src.data_base import DataBase
 from src.models import *
 from prompt_toolkit import PromptSession # For autocomplete commands
+import functools  # Metadata import from function into decorator
 
 CMD_EXIT="exit"
 CMD_NA="n/a"
@@ -90,8 +91,7 @@ class Bot:
             print(f"Unexpected error: {err}")
             if bot:
                 print("Trying to save DB state.")
-                # TODO: Adding valid save_data method
-                # bot.save_data()
+                bot.finalize([])
             return None
         finally:
             print (Style.RESET_ALL)

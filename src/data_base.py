@@ -9,7 +9,7 @@ from src.NoteBook import NoteBook
 USER_HOME = os.getenv('HOME') or os.getenv('USERPROFILE') or os.getenv('HOMEPATH')
 # CCNB_PATH use for environment variable, if it is not set, then use default path
 # if CCNB_PATH is file then use default path too
-CCNB_PATH = os.getenv('CCNB_PATH') if not Path(os.getenv('CCNB_PATH')).is_file() else os.path.join(USER_HOME, '.ccnb')
+CCNB_PATH = os.getenv('CCNB_PATH') if os.getenv('CCNB_PATH') is not None and not Path(os.getenv('CCNB_PATH')).is_file() else os.path.join(USER_HOME, '.ccnb')
 
 @dataclass
 class DataBase:
