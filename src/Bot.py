@@ -20,7 +20,7 @@ class Bot:
         self.address_book = database.address_book
         self.note_book = database.note_book
     
-        self.handlers = self.register_addressbook_handlers()
+        self.addressbook_handlers = self.register_addressbook_handlers()
         self.note_handlers = self.register_note_handlers()
     
 
@@ -80,21 +80,30 @@ class Bot:
         """addressbook, Switch to addressbook."""
 
         # Get addressbook handlers list
-        handlers = self.register_addressbook_handlers()
+        handlers = self.addressbook_handlers
         addressbook_command_list = self.print_handlers_list(handlers)
 
         print("Welcome to Addressbook mode!")
         print(addressbook_command_list)
 
-        # guess user input
-        session = PromptSession()
-        handlers_command_list = list(handlers.keys())
-        command_completer = CustomCommandCompleter(handlers_command_list)  
+        is_prompt = True
+        try:
+            # guess user input
+            session = PromptSession()
+            handlers_command_list = list(handlers.keys())
+            command_completer = CustomCommandCompleter(handlers_command_list)  
+        except BaseException as err:
+            print(f"Prompt feature error: {err}")
+            is_prompt = False
 
         exit_ = False
         while not exit_:
-            inp = session.prompt("bot_shell >> ", completer=command_completer).strip()
-            
+
+            if is_prompt:
+                inp = session.prompt("bot_shell >> ", completer=command_completer).strip()
+            else:
+                inp = input("bot_shell >> ").strip()
+
             command, *args = self.parse_input(inp)
             if command in ["exit", "close"]:
                 exit_ = True
@@ -109,20 +118,29 @@ class Bot:
         """notebook, Switch to notebook."""
         
         # Get notebook handlers list
-        handlers = self.register_note_handlers()
+        handlers = self.note_handlers
         notebook_command_list = self.print_handlers_list(handlers)
 
         print("Welcome to NoteBook mode!")
         print(notebook_command_list)
 
-        # guess user input
-        session = PromptSession()
-        handlers_command_list = list(handlers.keys())
-        command_completer = CustomCommandCompleter(handlers_command_list) 
+        is_prompt = True
+        try:
+            # guess user input
+            session = PromptSession()
+            handlers_command_list = list(handlers.keys())
+            command_completer = CustomCommandCompleter(handlers_command_list)
+        except BaseException as err:
+            print(f"Prompt feature error: {err}")
+            is_prompt = False
 
         exit_ = False
         while not exit_:
-            inp = session.prompt("notebook >> ", completer=command_completer).strip()
+            
+            if is_prompt:
+                inp = session.prompt("bot_shell >> ", completer=command_completer).strip()
+            else:
+                inp = input("bot_shell >> ").strip()
 
             command, *args = self.parse_input(inp)
             if command in ["exit", "close", "main"]:
@@ -267,7 +285,7 @@ class Bot:
 
     @input_error
     def edit_contact(self, *args) -> str:
-        """edit [name] [field], Edit contat information."""
+        """edit [name] [field], Edit contaсt information."""
         if len(*args) < 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"edit _name_ _field_\"")
         name, field, *_ = args[0]
@@ -387,20 +405,18 @@ class Bot:
     @input_error
     def help_text_addressbook(self, *args):
         """help, Show addressbook command list"""
-        handlers = self.register_addressbook_handlers()
-        command_list = self.print_handlers_list(handlers)
+        command_list = self.print_handlers_list(self.addressbook_handlers)
         return print(command_list)
     
     @input_error
     def help_text_notebook(self, *args):
         """help, Show notebook command list"""
-        handlers = self.register_note_handlers()
-        command_list = self.print_handlers_list(handlers)
+        command_list = self.print_handlers_list(self.note_handlers)
         return print(command_list)
     
     @input_error
     def stop_notebook(self, *args):
-        """close | exit | main, Close notebook and back to main menu"""
+        """close | exit | main, Close notebook and return to main menu"""
         pass
       
     def register_addressbook_handlers(self) -> dict:
