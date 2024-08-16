@@ -5,7 +5,13 @@ from src.NoteBook import NoteBook
 
 @dataclass
 class DataBase:
-    """Class for storing and reading data to/from file."""
+    """Class for storing and reading data to/from file.
+    Supported operations:
+        - save_data(address_book: AddressBook, note_book: NoteBook, username="guest")
+            saves data to a file named by username
+        - load_data(username="guest") -> DataBase
+            loads data from a file or returns new AddressBook and NoteBook if file not found
+    """
     address_book: AddressBook
     note_book: NoteBook
 
