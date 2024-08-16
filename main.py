@@ -1,11 +1,9 @@
+from prompt_toolkit import PromptSession  # For autocomplete commands
 
 from src.Bot import *
-from src.AddressBook import *
-from colorama import Style
-from prompt_toolkit import PromptSession # For autocomplete commands
 
 
-def main_loop():
+def main_loop(bot=None):
     # Autocomplete session
     try:
         exit_ = False
@@ -14,7 +12,6 @@ def main_loop():
         handlers = bot.register_handlers()
 
         # Let's make nice and readable help message
-        # TODO: Add subloop for notes
         print(bot.print_handlers_list())
 
         # guess user input

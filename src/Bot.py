@@ -1,15 +1,24 @@
-import re
-from datetime import datetime, timedelta
+import functools  # Metadata import from function into decorator
+
 from colorama import Fore, Style
+
 from src.AddressBook import AddressBook
+from src.NoteBook import NoteBook
 from src.data_base import DataBase
 from src.models import *
-from src.NoteBook import NoteBook
-import functools # Metadata import from function into decorator
 
 CMD_EXIT="exit"
 CMD_NA="n/a"
 class Bot:
+    """Bot class for handling user input and managing AddressBook and NoteBook
+    Contains two handlers with commands and methods for handling them
+    Attributes:
+        current_user: str, current username
+        address_book: AddressBook, instance of AddressBook
+        note_book: NoteBook, instance of NoteBook
+    Methods have explanation in docstrings.
+    """
+    
     current_user: str
     address_book: AddressBook
     note_book: NoteBook
@@ -35,7 +44,9 @@ class Bot:
 
     @staticmethod
     def input_error(func):
-        @functools.wraps(func) # Get oiginal metadata from functions
+        """Decorator for handling exceptions in input functions without breaking the program"""
+
+        @functools.wraps(func)  # Get original metadata from functions
         def inner(*args, **kwargs) -> str:
             try:
                 return func(*args, **kwargs)
@@ -50,32 +61,42 @@ class Bot:
     @staticmethod
     #returns command key and args if any
     def parse_input(inp: str) -> tuple[str, str, str] | tuple[str, Any]:
+        """Parse input string into command and arguments
+        inout string converts to command and list of arguments
+        """
         cmd, *args = inp.split()
         cmd = cmd.lower()
         if cmd == "edit":
-            name, field = " ".join(args[:-1]), args[-1]
-            return cmd, name, field
+            # edit command has 2 arguments. First is multiple-words name of contact, second is field to edit
+            try:
+                # Splitting input into name and field. Name is all words except last, field is last word
+                # Example: "edit John Doe phone" -> "edit", "John Doe", "phone"
+                name, field = " ".join(args[:-1]), args[-1]
+                return cmd, name, field
+            except IndexError:
+                # If not enough arguments provided, raise IndexError and return command without arguments
+                return cmd, *args
         return cmd, *args
 
     @input_error
     def say_hello(self, *args) -> str:
-        '''hello, Greet the bot.'''
+        """hello, Greet the bot."""
         if len(*args):
             raise IndexError("\"hello\" doesn\'t need arguments")
         return f"How can I help you, {self.current_user}?"
 
     @input_error
     def finalize(self, *args) -> str:
-        '''exit || close, Exit the bot.'''
+        """exit || close, Exit the bot."""
         DataBase.save_data(self.address_book, self.note_book, self.current_user)
         return "DB is saved. Good bye!"
 
     @input_error
     def add_contact(self, *args) -> str:
-        '''add [name] [phone], Add a new contact.'''
+        """add [name] [phone], Add a new contact."""
         if len(*args) != 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add _name_ _phone_\"")
-        name, phone, *_ = args[0]
+        name, phone = args[0]
         mess = "Contact already exist. Just updated with new phone."
         contact = self.address_book.find(name)
         if not contact:
@@ -86,23 +107,8 @@ class Bot:
         return mess
 
     @input_error
-    def change_contact(self, *args) -> str:
-        '''change [name] [phone], Change an existing contact's phone.'''
-        # TODO: Try to use argparse module for parsing arguments
-        # TODO: Add change_phone, change_email, change_address methods
-        if len(*args) != 3:
-            raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"change _name_ _old_phone_ _new_phone_\"")
-        name, old_phone, new_phone, *_ = args[0]
-        contact = self.address_book.find(name)
-        if not contact:
-            raise KeyError("Contact doesn\'t exist, please use \"add {name} {new_phone}\"")
-
-        contact.edit_phone(old_phone, new_phone)
-        return "Contact updated."
-
-    @input_error
     def get_phone(self, *args) -> str:
-        '''phone [name], Show the phone number of the contact.'''
+        """phone [name], Show the phone number of the contact."""
         name = " ".join(args[0])
         contact = self.address_book.find(name)
         if not contact:
@@ -111,33 +117,32 @@ class Bot:
 
     @input_error
     def search_contact(self, *args) -> str:
-        '''search [arg], Search contact.'''
-        if len(*args) != 1:
-            raise IndexError("Incorrect number of arguments" + Fore.YELLOW + " Please try \"search _name_ \"")
-        pattern, *_ = args[0]
+        """search [pattern], Search contact by pattern in all fields. Field order: name, phone, birthday, email, address."""
+        pattern = " ".join(args[0])
 
         return str.join("\n", [str(contact) for contact in self.address_book.search(pattern)])
 
     @input_error
     def get_all(self, *args) -> str:
-        '''all, Show all contacts.'''
+        """all, Show all contacts."""
         if len(*args):
             raise IndexError("\"all\" doesn\'t need arguments")
         if len(self.address_book) == 0:
             return "It\'s lonely here:( Please use \"add\" command"
-        result_str = "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format("Name", "Birthday", "Phone(s)", "Email(s)", "Address")
+        result_str = "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format("Name", "Birthday", "Phone(s)", "Email(s)",
+                                                                   "Address")
         for k, user in self.address_book.items():
             result_str += "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format(
-                str(user.name), 
-                str(user.birthday) if user.birthday else 'Not set', 
+                str(user.name),
+                str(user.birthday) if user.birthday else 'Not set',
                 '; '.join(user.phones),
                 '; '.join(user.emails) if user.emails else 'Not set',
-                str(user.address) if user.address else 'Not set' )
+                str(user.address) if user.address else 'Not set')
         return result_str
 
     @input_error
     def add_birthday(self, *args) -> str:
-        '''add-birthday [name] [DD.MM.YYYY], Add birthday to existing contact.'''
+        """add-birthday [name] [DD.MM.YYYY], Add birthday to existing contact."""
         if len(*args) != 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add-birthday _name_ _DD.MM.YYYY_\"")
         name, birthday, *_ = args[0]
@@ -151,7 +156,7 @@ class Bot:
 
     @input_error
     def show_birthday(self, *args) -> str:
-        '''show-birthday [name], Show the birthday of an existing contact.'''
+        """show-birthday [name], Show the birthday of an existing contact."""
         if len(*args) != 1:
             raise IndexError("Incorrect number of arguments" + Fore.YELLOW + " Please try \"show-birthday _name_ \"")
         name, *_ = args[0]
@@ -162,7 +167,7 @@ class Bot:
 
     @input_error
     def birthdays(self, *args) -> str:
-        '''birthdays, Show upcoming birthdays.'''
+        """birthdays, Show upcoming birthdays."""
         if len(*args):
             raise IndexError("\"birthdays\" doesn\'t need arguments")
         birth_dict = self.address_book.get_upcoming_birthdays()
@@ -173,7 +178,7 @@ class Bot:
 
     @input_error
     def add_email(self, *args) -> str:
-        '''add-email [name] [email], Add email to existing contact.'''
+        """add-email [name] [email], Add email to existing contact."""
         if len(*args) != 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add-email _name_ _email@example.com_\"")
         name, email, *_ = args[0]
@@ -187,7 +192,7 @@ class Bot:
 
     @input_error
     def add_address(self, *args) -> str:
-        '''add-address [name] [address], Add address to existing contact.'''
+        """add-address [name] [address], Add address to existing contact."""
         if len(*args) < 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add-address _name_ _address_\"")
 
@@ -243,7 +248,7 @@ class Bot:
 
     @input_error
     def delete_record(self, *args) -> str:
-        '''delete-contact [name], Delete contact.'''
+        """delete-contact [name], Delete contact."""
         """ Remove contact """
         name, *_ = args[0]
         self.address_book.delete(name)
@@ -286,7 +291,7 @@ class Bot:
     
     @input_error
     def add_note(self, *args):
-        '''add-note [title] [content], Add a new note.'''
+        """add-note [title] [content], Add a new note."""
         if len(*args) < 2:
             return "Usage: add-note [title] [content]"
         title, *content_parts = args[0]
@@ -295,7 +300,7 @@ class Bot:
 
     @input_error
     def edit_note(self, *args):
-        '''edit-note [title] [new_content], Edit an existing note.'''
+        """edit-note [title] [new_content], Edit an existing note."""
         if len(*args) < 2:
             return "Usage: edit-note [title] [new_content]"
         title, *new_content_parts = args[0]
@@ -304,7 +309,7 @@ class Bot:
 
     @input_error
     def delete_note(self, *args):
-        '''delete-note [title], Delete an existing note.'''
+        """delete-note [title], Delete an existing note."""
         if len(*args) < 1:
             return "Usage: delete-note [title]"
         title, *_ = args[0]
@@ -312,7 +317,7 @@ class Bot:
 
     @input_error
     def search_notes(self, *args):
-        '''search-notes [keyword], Search for notes by keyword.'''
+        """search-notes [keyword], Search for notes by keyword."""
         if len(*args) < 1:
             return "Usage: search-notes [keyword]"
         keyword = " ".join(*args)
@@ -320,7 +325,7 @@ class Bot:
 
     @input_error
     def show_all_notes(self, *args):
-        '''show-notes, Show all notes.'''
+        """show-notes, Show all notes."""
         return self.note_book.show_all_notes()
     
     @input_error
@@ -377,8 +382,8 @@ class Bot:
         funcs["show-notes"] = self.show_all_notes
         return funcs
 
-    def print_handlers_list(self) ->list:
-        ''' Handler's list for hello message '''
+    def print_handlers_list(self) -> str:
+        """ Handler's list for hello message """
         handlers = self.register_handlers() # commands list
         command_descriptions = []
         seen_commands = set()

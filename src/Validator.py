@@ -1,7 +1,10 @@
 import re
+
 from datetime import datetime
 
+
 class Validator:
+    """Class for validation and normalization of user input data."""
     @staticmethod
     def normalize_phone(phone_number: str) -> str:
         """Normalize phone numbers to standard format, leaving only digits and '+' symbol at the beginning (always returns number in format +380XXXXXXXXX)

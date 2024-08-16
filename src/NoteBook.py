@@ -1,6 +1,8 @@
 from collections import UserDict
 from typing import List
+
 from src.models import Note
+
 
 class NoteBook(UserDict):
     """Class for managing notes, inherited from UserDict.

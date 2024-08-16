@@ -1,7 +1,9 @@
-from dataclasses import dataclass
 import pickle
+from dataclasses import dataclass
+
 from src.AddressBook import AddressBook
 from src.NoteBook import NoteBook
+
 
 @dataclass
 class DataBase:
