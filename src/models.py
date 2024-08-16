@@ -1,9 +1,9 @@
 from datetime import datetime
-from os import remove
 from typing import Any, List
-from src.Validator import Validator
+
 from prompt_toolkit.completion import Completer, Completion
 
+from src.Validator import Validator
 
 
 class Field:
@@ -69,8 +69,13 @@ class Birthday(Field):
         return datetime.strftime(self.value, "%d.%m.%Y")
 
 class Email(Field):
-    """
-    Class for representing an email field with validation.
+    """Class for representing an email field with validation.
+    valid email format:
+    1) all characters before '@' are alphanumeric, '.' or '_'
+    2) '@' is present
+    3) all characters after '@' are alphanumeric or '.'
+    4) '.' is present
+    5) the domain part contains only letters
     """
     def __init__(self, value):
         self.__value = None
@@ -239,12 +244,29 @@ class Content(Field):
     pass
 
 class Tags(Field):
-    """Class for representing tags of a note."""
+    """Class for representing tags of a note. Contains a list of strings"""
     def __init__(self, value: List[str]):
         super().__init__(value)
 
 class Note:
-    """Class for representing a note with title, content, and tags."""
+    """Class for representing a note with title, content, and tags.
+    __init__:
+        title: str
+            The title of the note
+        content: str
+            The content of the note
+        tags: List[str]
+            The tags of the note
+    Methods:
+        add_tag(tag: str)
+            Adds a tag to the note if it does not already exist
+        remove_tag(tag: str)
+            Removes a tag from the note if it exists
+        edit_content(new_content: str)
+            Updates the content of the note
+        search_by_keyword(keyword: str) -> bool
+            Searches for a keyword in the title, content, and tags of the note
+    """
     def __init__(self, title: str, content: str, tags: List[str] = None):
         self.title = Title(title)
         self.content = Content(content)
@@ -270,7 +292,7 @@ class Note:
 
 
 class CustomCommandCompleter(Completer):
-    '''Custom class to detect first word in command line and give suggestions'''
+    """Custom class to detect first word in command line and give suggestions"""
     def __init__(self, commands):
         self.commands = commands
 

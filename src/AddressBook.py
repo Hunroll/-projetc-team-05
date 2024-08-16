@@ -1,10 +1,28 @@
-from datetime import datetime, timedelta
 from collections import UserDict
+from datetime import timedelta
 from typing import Dict
 
 from src.models import *
 
+
 class AddressBook(UserDict):
+    """Address book class
+        data: dict with key: int, value: UserRecord
+        user_id: int, autoincrement id for new records
+        supported operations:
+            - add_record(record: UserRecord):
+                validates if record already exists
+            - find(name: str) -> UserRecord|None
+            - search(pattern: str) -> List[UserRecord]:
+                search for a record by pattern in all fields
+                search order: name, phone, birthday, email, address
+                non-case-sensitive search
+            - delete(name: str)
+            - get_upcoming_birthdays(specific_date = None, days = 7) -> List[Dict[str, str]]
+                returns a list of upcoming birthdays within a days range (default 7) from a specific date (default today)
+                specific_date: str, format: "dd.mm.yyyy"
+                days: int, number of days to look ahead
+    """
     user_id = 0
     def add_record(self, record: UserRecord):
         AddressBook.user_id += 1
@@ -20,10 +38,6 @@ class AddressBook(UserDict):
         return None
 
     def search(self, pattern: str) -> List[UserRecord]:
-        """search for a record by pattern in all fields
-            search order: name, phone, birthday, email, address
-            non-case-sensitive search
-        """
         result = []
         for key in self.data:
             if pattern.lower() in self.data[key].name.value.lower():

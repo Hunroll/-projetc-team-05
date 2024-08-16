@@ -1,9 +1,23 @@
 from collections import UserDict
 from typing import List
+
 from src.models import Note
 
+
 class NoteBook(UserDict):
-    """Class for managing notes, inherited from UserDict."""
+    """Class for managing notes, inherited from UserDict.
+    Supported operations:
+        - add_note(title: str, content: str) -> str
+        - edit_note(title: str, new_content: str) -> str
+        - delete_note(title: str) -> str
+        - search_notes(keyword: str) -> str
+            searches for notes by keyword in the content. partial match non-case-sensitive
+        - show_all_notes() -> str
+        - add_tags_to_note(title: str, tags: List[str]) -> str
+        - remove_tag_from_note(title: str, tag: str) -> str
+        - search_notes_by_tags(tags: List[str]) -> str
+            searches for notes by tags. full match required
+    """
     def __init__(self):
         super().__init__()
 

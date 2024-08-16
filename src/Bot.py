@@ -1,15 +1,25 @@
 from datetime import datetime, timedelta
 from colorama import Fore, Style
+
 from src.AddressBook import AddressBook
+from src.NoteBook import NoteBook
 from src.data_base import DataBase
 from src.models import *
-from src.NoteBook import NoteBook
-import functools # Metadata import from function into decorator
 from prompt_toolkit import PromptSession # For autocomplete commands
+import functools  # Metadata import from function into decorator
 
 CMD_EXIT="exit"
 CMD_NA="n/a"
 class Bot:
+    """Bot class for handling user input and managing AddressBook and NoteBook
+    Contains two handlers with commands and methods for handling them
+    Attributes:
+        current_user: str, current username
+        address_book: AddressBook, instance of AddressBook
+        note_book: NoteBook, instance of NoteBook
+    Methods have explanation in docstrings.
+    """
+    
     current_user: str
     address_book: AddressBook
     note_book: NoteBook
@@ -35,7 +45,9 @@ class Bot:
 
     @staticmethod
     def input_error(func):
-        @functools.wraps(func) # Get oiginal metadata from functions
+        """Decorator for handling exceptions in input functions without breaking the program"""
+
+        @functools.wraps(func)  # Get original metadata from functions
         def inner(*args, **kwargs) -> str:
             try:
                 return func(*args, **kwargs) or ""
@@ -50,11 +62,21 @@ class Bot:
     @staticmethod
     #returns command key and args if any
     def parse_input(inp: str) -> tuple[str, str, str] | tuple[str, Any]:
+        """Parse input string into command and arguments
+        inout string converts to command and list of arguments
+        """
         cmd, *args = inp.split()
         cmd = cmd.lower()
         if cmd == "edit":
-            name, field = " ".join(args[:-1]), args[-1]
-            return cmd, name, field
+            # edit command has 2 arguments. First is multiple-words name of contact, second is field to edit
+            try:
+                # Splitting input into name and field. Name is all words except last, field is last word
+                # Example: "edit John Doe phone" -> "edit", "John Doe", "phone"
+                name, field = " ".join(args[:-1]), args[-1]
+                return cmd, name, field
+            except IndexError:
+                # If not enough arguments provided, raise IndexError and return command without arguments
+                return cmd, *args
         return cmd, *args
     
     @staticmethod
@@ -69,8 +91,7 @@ class Bot:
             print(f"Unexpected error: {err}")
             if bot:
                 print("Trying to save DB state.")
-                # TODO: Adding valid save_data method
-                # bot.save_data()
+                bot.finalize([])
             return None
         finally:
             print (Style.RESET_ALL)
@@ -170,7 +191,7 @@ class Bot:
         """add [name] [phone], Add a new contact."""
         if len(*args) != 2:
             raise ValueError("Incorrect number of arguments." + Fore.YELLOW + " Please try \"add _name_ _phone_\"")
-        name, phone, *_ = args[0]
+        name, phone = args[0]
         mess = "Contact already exist. Just updated with new phone."
         contact = self.address_book.find(name)
         if not contact:
@@ -191,10 +212,8 @@ class Bot:
 
     @input_error
     def search_contact(self, *args) -> str:
-        """search [arg], Search contact."""
-        if len(*args) != 1:
-            raise IndexError("Incorrect number of arguments" + Fore.YELLOW + " Please try \"search _name_ \"")
-        pattern, *_ = args[0]
+        """search [pattern], Search contact by pattern in all fields. Field order: name, phone, birthday, email, address."""
+        pattern = " ".join(args[0])
 
         return str.join("\n", [str(contact) for contact in self.address_book.search(pattern)])
 
@@ -205,14 +224,15 @@ class Bot:
             raise IndexError("\"all\" doesn\'t need arguments")
         if len(self.address_book) == 0:
             return "It\'s lonely here:( Please use \"add\" command"
-        result_str = "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format("Name", "Birthday", "Phone(s)", "Email(s)", "Address")
+        result_str = "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format("Name", "Birthday", "Phone(s)", "Email(s)",
+                                                                   "Address")
         for k, user in self.address_book.items():
             result_str += "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format(
-                str(user.name), 
-                str(user.birthday) if user.birthday else 'Not set', 
+                str(user.name),
+                str(user.birthday) if user.birthday else 'Not set',
                 '; '.join(user.phones),
                 '; '.join(user.emails) if user.emails else 'Not set',
-                str(user.address) if user.address else 'Not set' )
+                str(user.address) if user.address else 'Not set')
         return result_str
 
     @input_error
