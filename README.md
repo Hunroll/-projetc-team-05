@@ -62,13 +62,64 @@ Available commands:
   - Exit NoteBook mode and return to main menu.
 
 ## Installation:
-#TODO: Add installation instructions
-There will be instruction on how to install the bot from test.pypi.org (e.g.
-`pip install -i https://test.pypi.org/simple/ cnnb`)
+
+For installing the bot you need to have Python 3.10 or higher installed on your machine.
+
+[Instructions on how to install Python](https://www.python.org/downloads/).
+
+To install the bot you can use the following command:
+
+```bash
+pip install -i https://test.pypi.org/simple/ ccnb
+```
+
+Alternatively, you can clone the repository and install the bot from the source code:
+
+```bash
+git clone https://github.com/Hunroll/-projetc-team-05.git
+cd -projetc-team-05
+pip install -e .
+```
 
 ## Usage:
-#TODO: Add usage instructions
-Here will be instructions on how to run the bot (e.g. `python3 main.py`)
+
+To run the bot you can use the following command:
+
+#### Windows:
+
+```bash windows
+py -m ccnb
+```
+
+#### Linux/MacOS:
+
+```bash linux
+python3 -m ccnb 
+```
+
+By default, the bot will create a new file with the name of the user in the system user directory (e.g. ~/.ccnb or C:
+\Users\<username>\.ccnb).
+You can use custom path to save database file by setting the environment variable CCNB_PATH to the desired directory.
+
+Commands to set the environment variable:
+
+#### Windows PowerShell:
+
+```bash powershell
+$ENV:CCNB_PATH = "path/to/your/directory"
+```
+
+#### Windows CMD:
+
+```bash windows cmd
+set CCNB_PATH=path/to/your/directory
+```
+
+#### Linux/MacOS:
+
+```bash linux
+export CCNB_PATH="path/to/your/directory"
+```
 
 ## Contributors:
 - [Huroll](https://github.com/Hunroll)
