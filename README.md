@@ -100,7 +100,7 @@ python3 -m ccnb
 ```
 
 By default, the bot will create a new file with the name of the user in the system user directory (e.g. ~/.ccnb or C:
-\Users\<username>\.ccnb).
+\Users\\\<username>\\.ccnb).
 You can use custom path to save database file by setting the environment variable CCNB_PATH to the desired directory.
 
 Commands to set the environment variable:
