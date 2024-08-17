@@ -99,7 +99,7 @@ class Bot:
     @input_error
     def addressbook_mode(self, session=None, command_completer=None):
         """addressbook, Switch handler to addressbook mode."""
-        """Start addressbook handlers and autofeeling commands."""
+        """Start addressbook handlers and auto-feeling commands."""
 
         # Get addressbook handlers list
         handlers = self.addressbook_handlers
@@ -125,6 +125,10 @@ class Bot:
                 inp = session.prompt("bot_shell >> ", completer=command_completer).strip()
             else:
                 inp = input("bot_shell >> ").strip()
+
+            # Skip empty input
+            if inp == "":
+                continue
 
             command, *args = self.parse_input(inp)
             if command in ["exit", "close"]:
@@ -166,6 +170,10 @@ class Bot:
                 inp = session.prompt("bot_shell >> ", completer=command_completer).strip()
             else:
                 inp = input("bot_shell >> ").strip()
+
+            # Skip empty input
+            if inp == "":
+                continue
 
             command, *args = self.parse_input(inp)
             if command in ["exit", "close", "main"]:
