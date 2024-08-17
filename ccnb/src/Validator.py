@@ -53,3 +53,16 @@ class Validator:
         if date > datetime.now():
             raise ValueError("Birthday can't be a future date")
         return date
+
+
+    @staticmethod
+    def normalize_username(username: str) -> str:
+        """Validate username. Raises ValueError if username contains restricted characters.
+            valid username alphanumeric, dash, dot, minus. user-1"""
+        regex = r'^[A-Za-z0-9._-]+$'
+        if not username:
+            return "guest"
+        elif not re.match(regex, username):
+            print("Login is invalid, using \"guest\"")
+            return "guest"
+        return username

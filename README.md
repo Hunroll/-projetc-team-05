@@ -20,21 +20,23 @@ Available commands:
     - Add a new contact.
 - `add-birthday [name] [DD.MM.YYYY]`
     - Add birthday to existing contact.
-- `phone [name] `
+- `edit [name] [field]`
+    - Change an existing contact's phone. field could be "name", "birthday", "phone", "email" or "address"
+- `phone [name]`
     - Show the phone number of the contact.
-- `show-birthday [name] `
+- `show-birthday [name]`
     - Show the birthday of an existing contact.
 - `all`
     - Show all contacts.
 - `birthdays`
     - Show upcoming birthdays.
-- `add-email [name] [email] `
+- `add-email [name] [email]`
     - Add email to existing contact.
 - `add-address [name] [address]`
     - Add address to existing contact.
 - `search [arg]`
     - Search contact.
-- `delete-contact [name] `
+- `delete [name]`
     - Delete contact.
 - `exit` || `close`
     - Exit the bot.
@@ -42,21 +44,21 @@ Available commands:
 #### Notes:
 Available commands:
 
-- `add-note [title] [content]   `
+- `add [title] [content]`
   - Add a new note.
-- `edit-note [title] [new_content]`
+- `edit [title] [new_content]`
   - Edit an existing note.
-- `delete-note [title] `
+- `delete [title]`
   - Delete an existing note.
-- `add-tags [title] [tag1, tag2, ...]`
+- `add-tags [title] [tag1 tag2 ...]`
   - Add tags to a note.
 - `remove-tag [title] [tag]`
   - Remove a tag from a note.
-- `search-notes [keyword]`
+- `search [keyword]`
   - Search for notes by keyword.
-- `search-by-tags [tag1, tag2, ...]`
+- `search-by-tags [tag1 tag2 ...]`
   - Search for notes by tags.
-- `show-notes `
+- `all`
   - Show all notes.
 - `exit` || `close` || `main`
   - Exit NoteBook mode and return to main menu.

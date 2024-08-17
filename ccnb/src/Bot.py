@@ -25,7 +25,7 @@ class Bot:
     note_book: NoteBook
 
     def __init__(self, user_name: str):
-        self.__current_user = user_name.lower() # TODO: Normalize and validate user_name
+        self.__current_user = Validator.normalize_username(user_name)
         database = DataBase.load_data(self.current_user)
         self.address_book = database.address_book
         self.note_book = database.note_book
@@ -141,11 +141,8 @@ class Bot:
 
     @input_error
     def notebook_mode(self, _, session=None, command_completer=None):
-        """notebook, Switch handler to notebook mode."""
-        """Switch handler to notebook mode.
-        Notebook mode has its own set of commands and handlers.
-        Use subloop to navigate through notebook commands."""
-
+        """notebook, Switch to notebook."""
+        
         # Get notebook handlers list
         handlers = self.note_handlers
         notebook_command_list = self.print_handlers_list(handlers)
@@ -401,9 +398,9 @@ class Bot:
     
     @input_error
     def add_tags(self, *args):
-        """add-tag [title] [tag1 tag2 ...], Add tags to the note. All tags should be separated by space."""
+        """add-tags [title] [tag1 tag2 ...], Add tags to the note. All tags should be separated by space."""
         if len(*args) < 2:
-            return "Usage: add-tag [title] [tag1, tag2, ...]"
+            return "Usage: add-tags [title] [tag1 tag2 ...]"
         title, *tags = args[0]
         return self.note_book.add_tags_to_note(title, tags)
 
@@ -419,13 +416,13 @@ class Bot:
     def search_by_tags(self, *args):
         """search-by-tags [tag1 tag2 ...], Show notes filtered by tags count. All tags should be separated by space."""
         if len(*args) < 1:
-            return "Usage: search-by-tags [tag1, tag2, ...]"
+            return "Usage: search-by-tags [tag1 tag2 ...]"
         tags = args[0]
         return self.note_book.search_notes_by_tags(tags)
     
     @input_error
     def sort_notes_by_tag_count(self, *args):
-        """sort-by-tags-count, Show notes sorted by tags counts."""
+        """sort-by-tags-count, Show notes sorted by tags count."""
         return self.note_book.sort_notes_by_tag_count()
 
     @input_error
@@ -520,3 +517,4 @@ class Bot:
             "".join(f"{Fore.LIGHTYELLOW_EX}- {cmd.ljust(max_len)}{Style.RESET_ALL} - {desc}\n" for cmd, desc in command_descriptions)
         )
         return command_list
+
