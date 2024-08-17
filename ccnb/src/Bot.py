@@ -3,10 +3,10 @@ import functools  # Metadata import from function into decorator
 from colorama import Fore, Style
 from prompt_toolkit import PromptSession  # For autocomplete commands
 
-from src.AddressBook import AddressBook
-from src.NoteBook import NoteBook
-from src.data_base import DataBase
-from src.models import *
+from ccnb.src.AddressBook import AddressBook
+from ccnb.src.NoteBook import NoteBook
+from ccnb.src.data_base import DataBase
+from ccnb.src.models import *
 
 CMD_EXIT="exit"
 CMD_NA="n/a"
@@ -81,7 +81,7 @@ class Bot:
     
     @staticmethod
     @input_error
-    def launcher():
+    def launcher(bot=None):
         """ Bot launcher """
         try:
             bot = Bot(input("Enter login >>> "))
@@ -97,7 +97,7 @@ class Bot:
             print (Style.RESET_ALL)
 
     @input_error
-    def addressbook_mode(self):
+    def addressbook_mode(self, session=None, command_completer=None):
         """addressbook, Switch handler to addressbook mode."""
         """Start addressbook handlers and autofeeling commands."""
 
@@ -136,12 +136,12 @@ class Bot:
         
 
     @input_error
-    def notebook_mode(self, _):
+    def notebook_mode(self, _, session=None, command_completer=None):
         """notebook, Switch handler to notebook mode."""
         """Switch handler to notebook mode.
         Notebook mode has its own set of commands and handlers.
         Use subloop to navigate through notebook commands."""
-        
+
         # Get notebook handlers list
         handlers = self.note_handlers
         notebook_command_list = self.print_handlers_list(handlers)
@@ -234,7 +234,7 @@ class Bot:
             result_str += "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format(
                 str(user.name),
                 str(user.birthday) if user.birthday else 'Not set',
-                '; '.join(user.phones),
+                '; '.join(user.phones) if user.phones else 'Not set',
                 '; '.join(user.emails) if user.emails else 'Not set',
                 str(user.address) if user.address else 'Not set')
         return result_str
@@ -393,7 +393,7 @@ class Bot:
     
     @input_error
     def add_tags(self, *args):
-        """add-tag [title] [tag1, tag2, ...], Add tags to the note. All tags should be separated by space."""
+        """add-tag [title] [tag1 tag2 ...], Add tags to the note. All tags should be separated by space."""
         if len(*args) < 2:
             return "Usage: add-tag [title] [tag1, tag2, ...]"
         title, *tags = args[0]
@@ -401,7 +401,7 @@ class Bot:
 
     @input_error
     def remove_tag(self, *args):
-        """remove-tag [title] [tag1, tag2, ...], Remove certain tags from the note. All tags should be separated by space."""
+        """remove-tag [title] [tag1 tag2 ...], Remove certain tags from the note. All tags should be separated by space."""
         if len(*args) < 2:
             return "Usage: remove-tag [title] [tag]"
         title, *tags = args[0]
@@ -409,7 +409,7 @@ class Bot:
 
     @input_error
     def search_by_tags(self, *args):
-        """search-by-tags [tag1, tag2, ...], Show notes filtered by tags count. All tags should be separated by space."""
+        """search-by-tags [tag1 tag2 ...], Show notes filtered by tags count. All tags should be separated by space."""
         if len(*args) < 1:
             return "Usage: search-by-tags [tag1, tag2, ...]"
         tags = args[0]

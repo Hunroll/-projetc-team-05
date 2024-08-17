@@ -1,4 +1,4 @@
-from src.Bot import*
+from ccnb.src.Bot import *
 
 def main_loop():
     Bot.launcher()

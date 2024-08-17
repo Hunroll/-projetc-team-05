@@ -3,7 +3,7 @@ from typing import Any, List
 
 from prompt_toolkit.completion import Completer, Completion
 
-from src.Validator import Validator
+from ccnb.src.Validator import Validator
 
 
 class Field:

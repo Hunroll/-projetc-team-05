@@ -2,7 +2,7 @@ from collections import UserDict
 from datetime import timedelta
 from typing import Dict
 
-from src.models import *
+from ccnb.src.models import *
 
 
 class AddressBook(UserDict):
