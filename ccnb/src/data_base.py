@@ -9,12 +9,11 @@ from ccnb.src.AddressBook import AddressBook
 from ccnb.src.NoteBook import NoteBook
 
 USER_HOME = os.getenv('HOME') or os.getenv('USERPROFILE') or os.getenv('HOMEPATH')
-# CCNB_PATH use for environment variable, if it is not set, then use default path
-# if CCNB_PATH is file then use default path too
 CCNB_PATH = os.getenv('CCNB_PATH')
 if Path(CCNB_PATH).is_file():
-    print(Fore.RED + "[ERROR] " + Fore.YELLOW + f"\t{CCNB_PATH} is a file, not a directory\n"
-                                                f"\t\tPlease, set CCNB_PATH to a directory\n")
+    print(Fore.RED + "[ERROR] " + Fore.YELLOW +
+          f"\t{CCNB_PATH} is a file, not a directory\n"
+          f"\t\tPlease, set CCNB_PATH to a directory" + Fore.RESET)
     CCNB_PATH = os.path.join(USER_HOME, '.ccnb')
     print(Fore.YELLOW + f"\t\tUsing default path: {CCNB_PATH}\n" + Fore.RESET)
 elif CCNB_PATH is None:
