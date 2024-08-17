@@ -2,6 +2,14 @@
 
 This is a simple CLI contacts and notes bot that allows you to store and retrieve contacts and notes.
 
+### Table of Contents
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributors](#contributors)
+- [License](#license)
+
 ## Introduction:
 
 This is a simple CLI contacts and notes bot that allows you to store and retrieve contacts and notes. It is written in Python for team project on GoIT Neoversity Master of Science in Sybersecurity course.
