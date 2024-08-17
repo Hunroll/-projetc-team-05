@@ -1,9 +1,9 @@
 # CLI contacts and notes bot (CNNB)
 
-![Dynamic TOML Badge](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FHunroll%2F-projetc-team-05%2Fmain%2Fpyproject.toml&query=%24.title&style=plastic&label=name)
-![Dynamic TOML Badge](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FHunroll%2F-projetc-team-05%2Fmain%2Fpyproject.toml&query=%24.project.name&style=plastic&logo=https%3A%2F%2Ftest.pypi.org%2Fstatic%2Fimages%2Flogo-small.8998e9d1.svg&label=short-name&labelColor=lightgray&color=darkblue)
+[![Dynamic TOML Badge](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FHunroll%2F-projetc-team-05%2Fmain%2Fpyproject.toml&query=%24.title&style=plastic&label=name)](#cli-contacts-and-notes-bot-cnnb)
+[![Dynamic TOML Badge](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FHunroll%2F-projetc-team-05%2Fmain%2Fpyproject.toml&query=%24.project.name&style=plastic&logo=https%3A%2F%2Ftest.pypi.org%2Fstatic%2Fimages%2Flogo-small.8998e9d1.svg&label=short-name&labelColor=lightgray&color=darkblue)](#usage)
 [![Dynamic TOML Badge](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2FHunroll%2F-projetc-team-05%2Fmain%2Fpyproject.toml&query=%24.project.version&style=plastic&label=pypi&color=green)](https://test.pypi.org/project/ccnb/)
-![Python Version](https://img.shields.io/badge/python-3.10%2B-orange?labelColor=blue&style=plastic)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-orange?labelColor=blue&style=plastic)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=plastic)](LICENSE)
 
 ### Table of Contents
