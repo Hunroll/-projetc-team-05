@@ -12,70 +12,70 @@ This is a simple CLI contacts and notes bot that allows you to store and retriev
 store contacts and notes in a local binary file \<username>.pkl
 
 #### Contacts:
-Available commands:
 
-- `hello`
-    - Greet the bot.
-- `add [name] [phone]`
-    - Add a new contact.
-- `add-birthday [name] [DD.MM.YYYY]`
-    - Add birthday to existing contact.
-- `edit [name] [field]`
-    - Change an existing contact's phone. field could be "name", "birthday", "phone", "email" or "address"
-- `phone [name]`
-    - Show the phone number of the contact.
-- `show-birthday [name]`
-    - Show the birthday of an existing contact.
-- `all`
-    - Show all contacts.
-- `birthdays`
-    - Show upcoming birthdays.
-- `add-email [name] [email]`
-    - Add email to existing contact.
-- `add-address [name] [address]`
-    - Add address to existing contact.
-- `search [arg]`
-    - Search contact.
-- `delete [name]`
-    - Delete contact.
-- `exit` || `close`
-    - Exit the bot.
+Manage your contacts with the following commands:
+
+| Command                            | Description                                                                                       |
+|------------------------------------|---------------------------------------------------------------------------------------------------|
+| `hello`                            | Greet the bot.                                                                                    |
+| `notebook`                         | Switch handler to notebook mode.                                                                  |
+| `add [name] [phone]`               | Add a new contact.                                                                                |
+| `add-birthday [name] [DD.MM.YYYY]` | Add birthday to existing contact.                                                                 |
+| `phone [name]`                     | Show the phone number of the contact.                                                             |
+| `show-birthday [name]`             | Show the birthday of an existing contact.                                                         |
+| `all`                              | Show all contacts.                                                                                |
+| `birthdays`                        | Show upcoming birthdays.                                                                          |
+| `add-email [name] [email]`         | Add email to existing contact.                                                                    |
+| `add-address [name] [address]`     | Add address to existing contact.                                                                  |
+| `search [pattern]`                 | Search contact by pattern in all fields. <br/>Field order: name, phone, birthday, email, address. |
+| `edit [name] [field]`              | Edit contact information.                                                                         |
+| `delete [name]`                    | Delete contact.                                                                                   |
+| `exit` `close`                     | Exit the bot.                                                                                     |
+| `help`                             | Show addressbook command list                                                                     |
 
 #### Notes:
-Available commands:
 
-- `add [title] [content]`
-  - Add a new note.
-- `edit [title] [new_content]`
-  - Edit an existing note.
-- `delete [title]`
-  - Delete an existing note.
-- `add-tags [title] [tag1 tag2 ...]`
-  - Add tags to a note.
-- `remove-tag [title] [tag]`
-  - Remove a tag from a note.
-- `search [keyword]`
-  - Search for notes by keyword.
-- `search-by-tags [tag1 tag2 ...]`
-  - Search for notes by tags.
-- `all`
-  - Show all notes.
-- `exit` || `close` || `main`
-  - Exit NoteBook mode and return to main menu.
+After switching to notebook mode, you can manage your notes with the following commands:
+
+| Command                              | Description                               |
+|--------------------------------------|-------------------------------------------|
+| `add [title] [content]`              | Add a new note.                           |
+| `edit [title] [new_content]`         | Edit an existing note.                    |
+| `delete [title]`                     | Delete an existing note.                  |
+| `add-tag [title] [tag1 tag2 ...]`    | Add tags to the note.*                    |
+| `remove-tag [title] [tag1 tag2 ...]` | Remove certain tags from the note.*       |
+| `search [keyword]`                   | Search for notes by keyword.              |
+| `search-by-tags [tag1 tag2 ...]`     | Show notes filtered by tags count.*       |
+| `all`                                | Show all notes.                           |
+| `sort-by-tags-count`                 | Show notes sorted by tags counts.         |
+| `sort-by-tags-alphabetically`        | Show notes sorted by tags alphabetically. |
+| `help`                               | Show notebook command list                |
+| `close` `exit` `main`                | Close notebook and return to main menu    |
+
+**\*Note:** All multiple-tags in commands should be separated by space.
 
 ## Installation:
+
+### Requirements:
 
 For installing the bot you need to have Python 3.10 or higher installed on your machine.
 
 [Instructions on how to install Python](https://www.python.org/downloads/).
 
-To install the bot you can use the following command:
+### Dependencies
+
+| package        | minimum version |
+|----------------|-----------------|
+| colorama       | 0.4.4           |
+| prompt-toolkit | 3.0.20          |
+
+#### To install the bot you can use the following command:
 
 ```bash
 pip install -i https://test.pypi.org/simple/ ccnb
 ```
 
-Alternatively, you can clone the repository and install the bot from the source code:
+#### Alternatively, you can clone the repository and install the bot from the source code:
 
 ```bash
 git clone https://github.com/Hunroll/-projetc-team-05.git
