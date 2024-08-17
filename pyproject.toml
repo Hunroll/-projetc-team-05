@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ccnb"
-version = "0.0.1a2"
+version = "0.0.2"
 authors = [
     { name = "Hunroll" },
     { name = "Guru01100101" },
