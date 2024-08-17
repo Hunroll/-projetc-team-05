@@ -1,4 +1,5 @@
-# CLI contacts and notes bot
+# CLI contacts and notes bot (CNNB)
+
 This is a simple CLI contacts and notes bot that allows you to store and retrieve contacts and notes.
 
 ## Introduction:
@@ -12,63 +13,115 @@ store contacts and notes in a local binary file \<username>.pkl
 
 #### Contacts:
 Available commands:
-```bash
-hello 
-```
-- hello 
+
+- `hello`
     - Greet the bot.
-- add [name] [phone]
+- `add [name] [phone]`
     - Add a new contact.
-- add-birthday [name] [DD.MM.YYYY] 
+- `add-birthday [name] [DD.MM.YYYY]`
     - Add birthday to existing contact.
-- edit [name] [field]
+- `edit [name] [field]`
     - Change an existing contact's phone. field could be "name", "birthday", "phone", "email" or "address"
-- phone [name] 
+- `phone [name]`
     - Show the phone number of the contact.
-- show-birthday [name] 
+- `show-birthday [name]`
     - Show the birthday of an existing contact.
-- all 
+- `all`
     - Show all contacts.
-- birthdays 
+- `birthdays`
     - Show upcoming birthdays.
-- add-email [name] [email] 
+- `add-email [name] [email]`
     - Add email to existing contact.
-- add-address [name] [address] 
+- `add-address [name] [address]`
     - Add address to existing contact.
-- search [arg]
+- `search [arg]`
     - Search contact.
-- delete [name] 
+- `delete [name]`
     - Delete contact.
-- exit || close 
+- `exit` || `close`
     - Exit the bot.
 
 #### Notes:
 Available commands:
 
-- add [title] [content]         
+- `add [title] [content]`
   - Add a new note.
-- edit [title] [new_content]    
+- `edit [title] [new_content]`
   - Edit an existing note.
-- delete [title]                
+- `delete [title]`
   - Delete an existing note.
-- add-tags [title] [tag1,tag2,...] 
+- `add-tags [title] [tag1 tag2 ...]`
   - Add tags to a note.
-- remove-tag [title] [tag]           
+- `remove-tag [title] [tag]`
   - Remove a tag from a note.
-- search-notes [keyword]             
+- `search [keyword]`
   - Search for notes by keyword.
-- search-by-tags [tag1,tag2,...]   
+- `search-by-tags [tag1 tag2 ...]`
   - Search for notes by tags.
-- show-notes                         
+- `all`
   - Show all notes.
-- exit || close || main
+- `exit` || `close` || `main`
   - Exit NoteBook mode and return to main menu.
 
 ## Installation:
-#TODO: Add installation instructions
+
+For installing the bot you need to have Python 3.10 or higher installed on your machine.
+
+[Instructions on how to install Python](https://www.python.org/downloads/).
+
+To install the bot you can use the following command:
+
+```bash
+pip install -i https://test.pypi.org/simple/ ccnb
+```
+
+Alternatively, you can clone the repository and install the bot from the source code:
+
+```bash
+git clone https://github.com/Hunroll/-projetc-team-05.git
+cd -projetc-team-05
+pip install -e .
+```
 
 ## Usage:
-#TODO: Add usage instructions
+
+To run the bot you can use the following command:
+
+#### Windows:
+
+```bash windows
+py -m ccnb
+```
+
+#### Linux/MacOS:
+
+```bash linux
+python3 -m ccnb 
+```
+
+By default, the bot will create a new file with the name of the user in the system user directory (e.g. ~/.ccnb or C:
+\Users\<username>\.ccnb).
+You can use custom path to save database file by setting the environment variable CCNB_PATH to the desired directory.
+
+Commands to set the environment variable:
+
+#### Windows PowerShell:
+
+```bash powershell
+$ENV:CCNB_PATH = "path/to/your/directory"
+```
+
+#### Windows CMD:
+
+```bash windows cmd
+set CCNB_PATH=path/to/your/directory
+```
+
+#### Linux/MacOS:
+
+```bash linux
+export CCNB_PATH="path/to/your/directory"
+```
 
 ## Contributors:
 - [Huroll](https://github.com/Hunroll)

@@ -3,13 +3,21 @@ import pickle
 from dataclasses import dataclass
 from pathlib import Path
 
+from colorama import Fore
+
 from ccnb.src.AddressBook import AddressBook
 from ccnb.src.NoteBook import NoteBook
 
 USER_HOME = os.getenv('HOME') or os.getenv('USERPROFILE') or os.getenv('HOMEPATH')
-# CCNB_PATH use for environment variable, if it is not set, then use default path
-# if CCNB_PATH is file then use default path too
-CCNB_PATH = os.getenv('CCNB_PATH') if os.getenv('CCNB_PATH') is not None and not Path(os.getenv('CCNB_PATH')).is_file() else os.path.join(USER_HOME, '.ccnb')
+CCNB_PATH = os.getenv('CCNB_PATH')
+if Path(CCNB_PATH).is_file():
+    print(Fore.RED + "[ERROR] " + Fore.YELLOW +
+          f"\t{CCNB_PATH} is a file, not a directory\n"
+          f"\t\tPlease, set CCNB_PATH to a directory" + Fore.RESET)
+    CCNB_PATH = os.path.join(USER_HOME, '.ccnb')
+    print(Fore.YELLOW + f"\t\tUsing default path: {CCNB_PATH}\n" + Fore.RESET)
+elif CCNB_PATH is None:
+    CCNB_PATH = os.path.join(USER_HOME, '.ccnb')
 
 @dataclass
 class DataBase:
@@ -30,18 +38,19 @@ class DataBase:
             try:
                 os.makedirs(CCNB_PATH)
             except OSError:
-                print(f"[ERROR] Creation of the directory {CCNB_PATH} failed")
+                print(
+                    Fore.RED + "[ERROR] " + Fore.YELLOW + f"Creation of the directory {CCNB_PATH} failed" + Fore.RESET)
         filepath = os.path.join(CCNB_PATH, username.lower() + ".pkl")
         with open(filepath, "wb") as f:
             pickle.dump(data_base, f)
-        # print(f"[LOG] Data saved to {filepath}")
+        print(Fore.BLUE + "[INFO] " + Fore.YELLOW + f"Data saved to {filepath}" + Fore.RESET)
             
     @staticmethod
     def load_data(username="guest"):
         try:
             filepath = os.path.join(CCNB_PATH, username.lower() + ".pkl")
             with open(filepath, "rb") as f:
-                # print(f"[LOG] Loading data from {filepath}")
+                print(Fore.BLUE + "[INFO] " + Fore.YELLOW + f"Loading data from {filepath}" + Fore.RESET)
                 return pickle.load(f)
         except FileNotFoundError:
             # Return new AddressBook and NoteBook if file not found
