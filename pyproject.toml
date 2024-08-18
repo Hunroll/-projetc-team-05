@@ -20,6 +20,7 @@ license = { file = "LICENSE" }
 dependencies = [
     "colorama",
     "prompt_toolkit",
+    "pyAesCrypt",
 ]
 requires-python = ">=3.10"
 classifiers = [
