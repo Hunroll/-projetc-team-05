@@ -72,7 +72,7 @@ class DataBase:
             if os.path.exists(filepath):
                 with open(filepath, "rb") as f:
                     print(Fore.BLUE + "[INFO] " + Fore.YELLOW + f"Loading data from {filepath}" + Fore.RESET)
-                    return pickle.load(f)
+                    return (pickle.load(f), None)
             elif os.path.exists(filepath + ".aes"):
                 filepath = filepath + ".aes"
                 retries = 3
