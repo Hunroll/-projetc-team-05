@@ -135,9 +135,19 @@ class UserRecord:
     def __str__(self):
         return (f"Contact name: {self.name.value}, "
                 f"\nbirthday: {self.birthday if self.birthday else 'Not set'}, "
-                f"\nphones: {'; '.join(self.phones)}, "
+                f"\nphones: {'; '.join(self.phones) if self.phones else 'Not set'}, "
                 f"\nemail: {'; '.join(self.emails) if self.emails else 'Not set'}, "
                 f"\naddress: {self.address if self.address else 'Not set'}")
+
+    @staticmethod
+    def truncate_list_of_recs(records) -> str:
+        records = list(records) if records else None
+        if records is None or len(records) == 0:
+            return 'Not set'
+        if len(records) ==1:
+            return records[0]
+        if len(records) > 1:
+            return records[0] + "; ..."
 
     @property
     def name(self):

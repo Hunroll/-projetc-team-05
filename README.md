@@ -36,7 +36,7 @@ Manage your contacts with the following commands:
 | `phone [name]`                     | Show the phone number of the contact.                                                             |
 | `show-birthday [name]`             | Show the birthday of an existing contact.                                                         |
 | `all`                              | Show all contacts.                                                                                |
-| `birthdays`                        | Show upcoming birthdays.                                                                          |
+| `birthdays [days]`                 | Show upcoming birthdays. (Optional) Nuber of days                                                 |
 | `add-email [name] [email]`         | Add email to existing contact.                                                                    |
 | `add-address [name] [address]`     | Add address to existing contact.                                                                  |
 | `search [pattern]`                 | Search contact by pattern in all fields. <br/>Field order: name, phone, birthday, email, address. |

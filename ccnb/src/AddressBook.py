@@ -23,39 +23,41 @@ class AddressBook(UserDict):
                 specific_date: str, format: "dd.mm.yyyy"
                 days: int, number of days to look ahead
     """
-    user_id = 0
+    def __init__(self):
+        super().__init__()
+
     def add_record(self, record: UserRecord):
-        AddressBook.user_id += 1
-        key = AddressBook.user_id
+        key = max(self.data.keys()) + 1 if self.data.keys() else 1 
         if key in self.data:
             raise KeyError("Contact already exists")
         self.data[key] = record
 
     def find(self, name: str) -> UserRecord|None:
         for key in self.data:
-            if name.lower() in self.data[key].name.value.lower():
+            if name.lower() == self.data[key].name.value.lower():
                 return self.data[key]
         return None
 
     def search(self, pattern: str) -> List[UserRecord]:
         result = []
         for key in self.data:
-            if pattern.lower() in self.data[key].name.value.lower():
+            if self.data[key].name and pattern.lower() in self.data[key].name.value.lower():
                 result.append(self.data[key])
             elif self.data[key].phones and any(pattern in phone for phone in self.data[key].phones):
                 result.append(self.data[key])
             elif self.data[key].birthday and pattern in str(self.data[key].birthday.value):
                 result.append(self.data[key])
-            elif self.data[key].emails and any(pattern.lower() in email.value.lower() for email in self.data[key].emails):
+            elif self.data[key].emails and any(pattern.lower() in email.lower() for email in self.data[key].emails):
                 result.append(self.data[key])
             elif self.data[key].address and pattern.lower() in self.data[key].address.value.lower():
                 result.append(self.data[key])
-        return result if len(result) > 0 else None
+        return result
 
     def delete(self, name: str):
-        if name not in self.data:
+        contact = self.find(name)
+        if not contact:
             raise KeyError("Contact doesn\'t exist")
-        self.data.pop(name)
+        self.data = dict((key, val) for (key, val) in self.data.items() if val != contact)
 
     def get_upcoming_birthdays(self, specific_date = None, days = 7) -> List[Dict[str, str]]:
         congrats_list = []

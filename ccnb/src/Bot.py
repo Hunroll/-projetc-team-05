@@ -228,7 +228,10 @@ class Bot:
         """search [pattern], Search contact by pattern in all fields. Field order: name, phone, birthday, email, address."""
         pattern = " ".join(args[0])
 
-        return str.join("\n", [str(contact) for contact in self.address_book.search(pattern)])
+        search_result = self.address_book.search(pattern)
+        if search_result:
+            return str.join("\n\n", [str(contact) for contact in self.address_book.search(pattern)])
+        return "No matches"
 
     @input_error
     def get_all(self, *args) -> str:
@@ -243,8 +246,8 @@ class Bot:
             result_str += "{:<20} {:<12} {:<20} {:<20} {:<20}\n".format(
                 str(user.name),
                 str(user.birthday) if user.birthday else 'Not set',
-                '; '.join(user.phones) if user.phones else 'Not set',
-                '; '.join(user.emails) if user.emails else 'Not set',
+                UserRecord.truncate_list_of_recs(user.phones),
+                UserRecord.truncate_list_of_recs(user.emails),
                 str(user.address) if user.address else 'Not set')
         return result_str
 
@@ -275,10 +278,14 @@ class Bot:
 
     @input_error
     def birthdays(self, *args) -> str:
-        """birthdays, Show upcoming birthdays."""
-        if len(*args):
-            raise IndexError("\"birthdays\" doesn\'t need arguments")
-        birth_dict = self.address_book.get_upcoming_birthdays()
+        """birthdays [days], Show upcoming birthdays. (optional) show only upcoming [days] days"""
+        if len(*args) > 1:
+            raise IndexError("\"birthdays\" can only accept 1 argument - number of days")
+        if (args[0]):
+            days = int(args[0][0])
+        else:
+            days = 7
+        birth_dict = self.address_book.get_upcoming_birthdays(days=days)
         if not birth_dict:
             raise KeyError("Nothing to show")
         result_str = ""
@@ -369,7 +376,7 @@ class Bot:
         new_passwd = " ".join(args[0])
 
         delete_unenctypted = (new_passwd and not self.password) # delete old file .pkl if password is set
-        
+
         self.password = new_passwd
         DataBase.save_data(self.address_book, self.note_book, self.current_user, self.password)
         if delete_unenctypted:
