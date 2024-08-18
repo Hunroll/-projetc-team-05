@@ -251,6 +251,9 @@ class Title(Field):
 
 class Content(Field):
     """Class for representing the content of a note."""
+    def short_string(self, length = 40):
+        full_str = str(self)
+        return full_str if len(full_str) <= 40 else (full_str[0:length - 4] + "...")
     pass
 
 class Tags(Field):
@@ -298,7 +301,8 @@ class Note:
         self.content = Content(new_content)
 
     def search_by_keyword(self, keyword: str) -> bool:
-        return keyword in self.title.value or keyword in self.content.value or any(keyword in tag for tag in self.tags.value)
+        keyword = keyword.lower()
+        return keyword in self.title.value.lower() or keyword in self.content.value.lower() or any(keyword in tag.lower() for tag in self.tags.value)
 
 
 class CustomCommandCompleter(Completer):

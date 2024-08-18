@@ -395,9 +395,10 @@ class Bot:
     @input_error
     def edit_note(self, *args):
         """edit [title] [new_content], Edit an existing note."""
-        if len(*args) < 2:
+        args = " ".join(args[0]).split(" ") #Workaround for Edit command.
+        if len(args) < 2:
             return "Usage: edit [title] [new_content]"
-        title, *new_content_parts = args[0]
+        title, *new_content_parts = args
         new_content = " ".join(new_content_parts)
         return self.note_book.edit_note(title, new_content)
 

@@ -44,10 +44,10 @@ class NoteBook(UserDict):
         if not found_notes:
             return "No notes found."
         
-        result_str = "{:<20} {:<20} {:<20}\n".format("Title", "Content", "Tags")
+        result_str = "{:<20} {:<40} {:<20}\n".format("Title", "Content", "Tags")
         for k, note in found_notes.items():
             tags_str = ', '.join(note.tags.value) if note.tags.value else 'No tags'
-            result_str += "{:<20} {:<20} {:<20}\n".format(
+            result_str += "{:<20} {:<40} {:<20}\n".format(
                 str(note.title), 
                 str(note.content),
                 tags_str
@@ -58,12 +58,12 @@ class NoteBook(UserDict):
         if not self.data:
             return "No notes available."
         # TODO: prettify output
-        result_str = "{:<20} {:<20} {:<20}\n".format("Title", "Content", "Tags")
+        result_str = "{:<20} {:<40} {:<20}\n".format("Title", "Content", "Tags")
         for k, note in self.data.items():
             tags_str = ', '.join(note.tags.value) if note.tags.value else 'No tags'
-            result_str += "{:<20} {:<20} {:<20}\n".format(
+            result_str += "{:<20} {:<40} {:<20}\n".format(
                 str(note.title), 
-                str(note.content),
+                note.content.short_string(),
                 tags_str
             )
         return result_str
@@ -89,10 +89,10 @@ class NoteBook(UserDict):
         if not found_notes:
             return f"No notes found with tags {', '.join(tags)}."
 
-        result_str = "{:<20} {:<20} {:<20}\n".format("Title", "Content", "Tags")
+        result_str = "{:<20} {:<40} {:<20}\n".format("Title", "Content", "Tags")
         for k, note in found_notes.items():
             tags_str = ', '.join(note.tags.value) if note.tags.value else 'No tags'
-            result_str += "{:<20} {:<20} {:<20}\n".format(
+            result_str += "{:<20} {:<40} {:<20}\n".format(
                 str(note.title), 
                 str(note.content),
                 tags_str
@@ -112,12 +112,12 @@ class NoteBook(UserDict):
         if not sorted_notes:
             return "No notes available for sorting."
 
-        result_str = "{:<20} {:<20} {:<20}\n".format("Title", "Content", "Tags")
+        result_str = "{:<20} {:<40} {:<20}\n".format("Title", "Content", "Tags")
         for k, note in sorted_notes:
             # Використовуємо копію тегів для сортування, не змінюючи оригінальний список тегів
             sorted_tags = sorted(note.tags.value)
             tags_str = ', '.join(sorted_tags) if sorted_tags else 'No tags'
-            result_str += "{:<20} {:<20} {:<20}\n".format(
+            result_str += "{:<20} {:<40} {:<20}\n".format(
                 str(note.title),
                 str(note.content),
                 tags_str
@@ -136,12 +136,12 @@ class NoteBook(UserDict):
         if not sorted_notes:
             return "No notes available for sorting."
 
-        result_str = "{:<20} {:<20} {:<20}\n".format("Title", "Content", "Tags")
+        result_str = "{:<20} {:<40} {:<20}\n".format("Title", "Content", "Tags")
         for k, note in sorted_notes:
             # Використовуємо копію тегів для сортування, не змінюючи оригінальний список тегів
             sorted_tags = sorted(note.tags.value)
             tags_str = ', '.join(sorted_tags) if sorted_tags else 'No tags'
-            result_str += "{:<20} {:<20} {:<20}\n".format(
+            result_str += "{:<20} {:<40} {:<20}\n".format(
                 str(note.title),
                 str(note.content),
                 tags_str
