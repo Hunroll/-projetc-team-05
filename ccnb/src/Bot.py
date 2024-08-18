@@ -5,7 +5,7 @@ from prompt_toolkit import PromptSession  # For autocomplete commands
 
 from ccnb.src.AddressBook import AddressBook
 from ccnb.src.NoteBook import NoteBook
-from ccnb.src.data_base import DataBase
+from ccnb.src.data_base import DataBase, CorruptedFileException
 from ccnb.src.models import *
 
 CMD_EXIT="exit"
@@ -26,9 +26,10 @@ class Bot:
 
     def __init__(self, user_name: str):
         self.__current_user = Validator.normalize_username(user_name)
-        database = DataBase.load_data(self.current_user)
+        (database, password) = DataBase.load_data(self.current_user)
         self.address_book = database.address_book
         self.note_book = database.note_book
+        self.password = password
     
         self.addressbook_handlers = self.register_addressbook_handlers()
         self.note_handlers = self.register_note_handlers()
@@ -87,6 +88,9 @@ class Bot:
             bot = Bot(input("Enter login >>> "))
             # First should be addressbook
             bot.addressbook_mode()
+        except CorruptedFileException as err:
+            print(f"Could not open save file. Error: {err}")
+            return None
         except Exception as err:
             print(f"Unexpected error: {err}")
             if bot:
@@ -192,7 +196,7 @@ class Bot:
     @input_error
     def finalize(self, *args) -> str:
         """exit || close, Exit the bot."""
-        DataBase.save_data(self.address_book, self.note_book, self.current_user)
+        DataBase.save_data(self.address_book, self.note_book, self.current_user, self.password)
         return "DB is saved. Good bye!"
 
     @input_error
@@ -358,6 +362,21 @@ class Bot:
         return f"Contact {name} removed."
     
     @input_error
+    def set_password(self, *args) -> str:
+        """set-password [new_pass], Set password."""
+        if len(*args) < 1:
+            raise ValueError("Password can\'t be empty.")
+        new_passwd = " ".join(args[0])
+
+        delete_unenctypted = (new_passwd and not self.password) # delete old file .pkl if password is set
+        
+        self.password = new_passwd
+        DataBase.save_data(self.address_book, self.note_book, self.current_user, self.password)
+        if delete_unenctypted:
+            DataBase.delete_unencrypted_save(self.current_user)
+        return f"Password changed successfully."
+    
+    @input_error
     def add_note(self, *args):
         """add [title] [content], Add a new note."""
         if len(*args) < 2:
@@ -463,6 +482,7 @@ class Bot:
         funcs["search"] = self.search_contact
         funcs["edit"] = self.edit_contact
         funcs["delete"] = self.delete_record
+        funcs["set-password"] = self.set_password
         funcs["exit"] = self.finalize
         funcs["close"] = self.finalize
         funcs["help"] = self.help_text_addressbook
