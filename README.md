@@ -42,6 +42,7 @@ Manage your contacts with the following commands:
 | `search [pattern]`                 | Search contact by pattern in all fields. <br/>Field order: name, phone, birthday, email, address. |
 | `edit [name] [field]`              | Edit contact information.                                                                         |
 | `delete [name]`                    | Delete contact.                                                                                   |
+| `set-password [new_pass]`          | Set password.                                                                                     |
 | `exit` `close`                     | Exit the bot.                                                                                     |
 | `help`                             | Show addressbook command list                                                                     |
 
@@ -80,6 +81,7 @@ For installing the bot you need to have Python 3.10 or higher installed on your 
 |----------------|-----------------|
 | colorama       | 0.4.4           |
 | prompt-toolkit | 3.0.20          |
+| pyAesCrypt     | 6.1.1           |
 
 #### To install the bot you can use the following command:
 
